@@ -5,6 +5,8 @@ from collections import defaultdict
 class DirectedGraph:
 	def __init__(self):
 		self.adjList = defaultdict(set)
+	def __contains__(self, item):
+		return item in self.adjList
 
 	def createFromDict(self, d):
 		self.adjList = defaultdict(set, d)
