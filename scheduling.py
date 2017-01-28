@@ -36,7 +36,8 @@ note:
 from Course import Course, CoursesGraph
 from collections import deque
 
-def iniQueue(graph:CoursesGraph):
+
+def iniQueue(graph: CoursesGraph):
 	"""
 	it will put all the courses without prereq to deque and return the deque
 	"""
@@ -44,43 +45,72 @@ def iniQueue(graph:CoursesGraph):
 
 	for name, course in graph.getCourses():
 		if not course.hasPrereq():
-			queue.append((name, course))
+			queue.append(name)
 
-	for c in queue:
-		graph.delCourse(c[0])
 	return queue
+
 
 def widthFunc(level):
 	return len(level) == 2
 
+
+def expandQueue(Q, graph, course):
+	# add those courses that are satisfied into the Q
+	satisfies = graph.tagSatisfy(course)
+	for sat in satisfies:
+		if graph[sat].prereqIsSatisfied():
+			Q.append(sat)
+
+
 def courseScheduling(graph, widthFunc):
-	queue = iniQueue(graph)
-	schedule = []
-	while queue:
-		curCourse = queue.popleft()
-		if not schedule or widthFunc(schedule[-1]): # add a higher level
-			schedule.append([])
-		# one level lower than its prepreqs
-		schedule[-1].append(curCourse)
-		# delete the requirement in the satisfying course
-		satisfySet = curCourse[1].getSatisfy()
-		for sat in satisfySet:
-			satCourse = graph.getCourse(sat)
-			if satCourse in graph and satCourse.delPrereq(curCourse[0]):# no prereq anymore
-				queue.append((sat, satCourse))
-				graph.delCourse(sat)
+	# initialize my queue
+	Q = iniQueue(graph)
 
-	return schedule
+	if not Q: return None
+	L = [[]]  # output
+	while Q:
+		cur = Q.popleft()
+		# if the highest level has dependents, it has to be assigned to a new level
+		for v in L[-1]:
+			if graph.isPrereq(v, cur):
+				L.append([cur])
+				assigned = True
 
+				break
+		else:  # it means that the highest level does not has cur's dependents
+			step = len(L) - 2
+			assigned = False
+			if widthFunc(L[-1]):  # highest level is full, should add a new level
+				L.append([])
+			lastStep = len(L) - 1  # last step is an accepted level for cur
+		# start to check from the second highest level to the lowest
+		# if cur's dependents are in the current step, it will be added to the closest
+		# accepted step (last step)
+		while not assigned and step >= 0:
+
+			if not widthFunc(L[step]):  # only check those levels that are not full
+				for v in L[step]:  # check if there are dependents in this level
+					if graph.isPrereq(v, cur):  # there are dependents in this level
+						L[lastStep].append(cur)  # it cannot be assigned to a higher level
+						assigned = True
+						break
+				else:
+					lastStep = step
+			step -= 1
+		if not assigned:
+			L[lastStep].append(cur)
+		expandQueue(Q, graph, cur)
+	return L
 
 
 if __name__ == "__main__":
 	adjList = {
-		"a": Course(units=4.0, quarter=[1], prereq=[]),
-		"b": Course(units=4.0, quarter=[2], prereq=[{"a"}]),
-		"c": Course(units=2.0, quarter=[2, 3], prereq=[{"b"}]),
-		"d": Course(units=1.5, quarter=[2, 3], prereq=[{"a", "c"}, {"k","e"}]),  # k is not in the adjList
-		"e": Course(units=3.5, quarter=[2, 3], prereq=[])
+		"a": Course(units=4.0, quarter=[0], prereq=[]),
+		"b": Course(units=4.0, quarter=[1], prereq=[{"a"}]),
+		"c": Course(units=2.0, quarter=[1, 2], prereq=[{"b"}]),
+		"d": Course(units=1.5, quarter=[1, 2], prereq=[{"a", "c"}, {"k", "e"}]),  # k is not in the adjList
+		"e": Course(units=3.5, quarter=[1, 2], prereq=[]),
+		"f": Course(units=2.0, quarter=[1, 2], prereq=[{"a", "c"}])
 	}
 	graph = CoursesGraph(adjList)
 	graph.updateSatisfies()

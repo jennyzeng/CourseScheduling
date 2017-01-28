@@ -8,7 +8,7 @@ class csCourseSpider(scrapy.Spider):
 
 	def start_requests(self):
 		url = "https://www.reg.uci.edu/cob/prrqcgi?"
-		departments = ["I&C SCI"]  # COMPSCI
+		departments = ["WRITING"]
 		info = {'action': 'view_all', 'term': 201703, 'dept': None}
 
 		for de in departments:
@@ -20,7 +20,7 @@ class csCourseSpider(scrapy.Spider):
 
 	def parse(self, response):
 		self.log(response.meta['department'])
-		filename = "courses.txt"
+		filename = response.meta['department']+".txt"
 		with open(filename, 'a') as f:
 			for row in response.css("table[width='800'] tr"):
 				try:
@@ -46,7 +46,9 @@ def getPrereqs(prereq):
 		for course in courses:
 			course = re.sub("\(|\)| (\( min grade.*?\))| (\( min score.*?\))|(coreq)|( )|(recommended)",
 			                "", course).replace("&amp;", "&").replace("coreq", "")
-			if course != 'UPPERDIVISIONST' and course != 'INGONLY' and not course.startswith("AP"):
+			if course not in ['UPPERDIVISIONST' ,'INGONLY','BETTERseeSOCcommentsforrepeatpolicy'] and '='not in course\
+					and not course.startswith("AP") and not course.startswith('NO') and not course.startswith('PLACEMENT'):
 				orSet.add(course)
 		if orSet: output.append(orSet)
 	return output
+# scrapy crawl courses

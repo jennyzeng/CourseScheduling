@@ -13,6 +13,7 @@ def coffman_graham(graph, widthFunc):
 	"""
 	# get topological Order
 	tp = topologicalOrder(graph)
+	if not tp: return None 
 	L = [[]]    # output
 	while tp:
 		cur = tp.popleft()
