@@ -47,6 +47,7 @@ This schedule takes the quarter offering and course units into account. However,
     year 4 quarter 1: ['COMPSCI169']
     year 4 quarter 2: ['COMPSCI167']
     ```
+
 ## Schedule
 
 ### 2017 Winter Quarter
