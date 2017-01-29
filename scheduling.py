@@ -49,11 +49,6 @@ def iniQueue(graph: CoursesGraph):
 
 	return queue
 
-
-def widthFunc(level):
-	return len(level) == 2
-
-
 def expandQueue(Q, graph, course):
 	# add those courses that are satisfied into the Q
 	satisfies = graph.tagSatisfy(course)
@@ -61,6 +56,8 @@ def expandQueue(Q, graph, course):
 		if graph[sat].prereqIsSatisfied():
 			Q.append(sat)
 
+def widthFunc(level):
+	return len(level) == 2
 
 def courseScheduling(graph, widthFunc):
 	# initialize my queue
@@ -70,6 +67,7 @@ def courseScheduling(graph, widthFunc):
 	L = [[]]  # output
 	while Q:
 		cur = Q.popleft()
+
 		# if the highest level has dependents, it has to be assigned to a new level
 		for v in L[-1]:
 			if graph.isPrereq(v, cur):
@@ -88,13 +86,13 @@ def courseScheduling(graph, widthFunc):
 		# accepted step (last step)
 		while not assigned and step >= 0:
 
-			if not widthFunc(L[step]):  # only check those levels that are not full
-				for v in L[step]:  # check if there are dependents in this level
-					if graph.isPrereq(v, cur):  # there are dependents in this level
-						L[lastStep].append(cur)  # it cannot be assigned to a higher level
-						assigned = True
-						break
-				else:
+			for v in L[step]:  # check if there are dependents in this level
+				if graph.isPrereq(v, cur):  # there are dependents in this level
+					L[lastStep].append(cur)  # it cannot be assigned to a higher level
+					assigned = True
+					break
+			else:
+				if not widthFunc(L[step]): # if not full, this is a possible level
 					lastStep = step
 			step -= 1
 		if not assigned:

@@ -32,10 +32,11 @@ Some thoughts:
 
 
 class Course:
-	def __init__(self, units, quarter, prereq=None, satisfy=None,
+	def __init__(self, name, units=None, quarter=None, prereq=None, satisfy=None,
 	             startTime=None, endTime=None, weekdays=None):
-		self.quarter = quarter
-		self.units = units
+		self.name = name
+		self.quarter = quarter if quarter else []
+		self.units = units if units else 4.0
 		self.prereq = prereq if prereq else []
 		self.satisfy = satisfy if satisfy else set()
 		self.startTime = startTime

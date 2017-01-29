@@ -1,6 +1,6 @@
-from directedGraphRepresentation import DirectedGraph
 from collections import Counter, deque
 
+from coffman_graham_algorithm.directedGraphRepresentation import DirectedGraph
 
 
 def widthFunc(level):

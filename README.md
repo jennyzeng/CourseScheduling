@@ -6,8 +6,14 @@ described the Coffman-graham algorithm that I will be working on, and some diffi
 [research-initial-plan.pdf](research-initial-plan.pdf)
 
 ## Current Results
+1. Original coffman-graham algorithm.
+    - [directedGraphRepresentation](coffman_graham_algorithm/directedGraphRepresentation.py)
+    - [coffman-graham algorithm](coffman_graham_algorithm/coffman-grapham.py)
 
-1. some courses prerequisite infomation I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115). I am still working on improving the code of my crawlers.
+2. Crawlers (using Scrapy framework).
+    - [Course Prerequisites Crawler](courseCrawler/courseCrawler/spiders/csCourseSpider.py)
+
+3. some courses prerequisite infomation I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115). I am still working on improving the code of my crawlers.
 **samples**:
     - [COMPSCI prereqs](info/COMPSCI.txt)
     - [I&CSCI prereqs](info/I&SCI.txt)
