@@ -58,6 +58,18 @@ def expandQueue(Q, graph, course):
 
 def widthFunc(level):
 	return len(level) == 2
+def lastAccpetedLevel(L, course):
+	"""
+	after expanding L, last level of L is accepted for course
+	"""
+	while True:  # find highest avail quarter
+		if not course.isValidQuarter(len(L)-1):
+			L.append([])
+		else:
+			return
+def clearEmptyLevels(L):
+	while L and not L[-1]:
+		L.pop()
 
 def courseScheduling(graph, widthFunc):
 	# initialize my queue
@@ -71,15 +83,18 @@ def courseScheduling(graph, widthFunc):
 		# if the highest level has dependents, it has to be assigned to a new level
 		for v in L[-1]:
 			if graph.isPrereq(v, cur):
-				L.append([cur])
+				# find highest avail quarter
+				L.append([])
+				lastAccpetedLevel(L, graph[cur])
+				L[-1].append(cur)
 				assigned = True
-
 				break
 		else:  # it means that the highest level does not has cur's dependents
 			step = len(L) - 2
 			assigned = False
-			if widthFunc(L[-1]):  # highest level is full, should add a new level
+			if widthFunc(L[-1], graph[cur]):  # highest level is full, should add a new level
 				L.append([])
+			lastAccpetedLevel(L, graph[cur])
 			lastStep = len(L) - 1  # last step is an accepted level for cur
 		# start to check from the second highest level to the lowest
 		# if cur's dependents are in the current step, it will be added to the closest
@@ -92,12 +107,14 @@ def courseScheduling(graph, widthFunc):
 					assigned = True
 					break
 			else:
-				if not widthFunc(L[step]): # if not full, this is a possible level
+				if not widthFunc(L[step], graph[cur]) and graph[cur].isValidQuarter(step):
+					# if step is not full and cur will be offered this quarter, this is a possible level
 					lastStep = step
 			step -= 1
 		if not assigned:
 			L[lastStep].append(cur)
 		expandQueue(Q, graph, cur)
+	clearEmptyLevels(L)
 	return L
 
 

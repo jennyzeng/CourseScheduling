@@ -10,21 +10,43 @@ described the Coffman-graham algorithm that I will be working on, and some diffi
     - [directedGraphRepresentation](coffman_graham_algorithm/directedGraphRepresentation.py)
     - [coffman-graham algorithm](coffman_graham_algorithm/coffman-grapham.py)
 
-2. Crawlers (using Scrapy framework).
-    - [Course Prerequisites Crawler](courseCrawler/courseCrawler/spiders/csCourseSpider.py)
+2. Crawlers
+    - [Course Prerequisites Crawler (using Scrapy framework)](courseCrawler/courseCrawler/spiders/csCourseSpider.py)
+    - [WebSoc Crawler (using beautiful soup and requests libraries)](WebSoc.py)
 
-3. some courses prerequisite infomation I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115). I am still working on improving the code of my crawlers.
-**samples**:
-    - [COMPSCI prereqs](info/COMPSCI.txt)
-    - [I&CSCI prereqs](info/I&SCI.txt)
-    - [IN4MATX prereqs](info/IN4MATX.txt)
-    - [STATS prereqs](info/STATS.txt)
-    - [WRITING prereqs](info/WRITING.txt)
-    - [MATH prereqs](info/MATH.txt)
+3. some courses infomation I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I am still working on improving the code of my crawlers.
 
-    In the txt file, each line contains info of a course and the line is separated by ";". First part is course code (e.g. COMPSCI111), second part is course name (e.g. DIGITAL IMAGE PROC), and the third part is its prereqs. Prereqs are in the format of a list of sets to represent the AND/OR relationship.
+    **samples**:
+    - [COMPSCI](info/COMPSCI.txt)
+    - [I&CSCI](info/I&SCI.txt)
+    - [IN4MATX](info/IN4MATX.txt)
+    - [STATS](info/STATS.txt)
+    - [WRITING](info/WRITING.txt)
+    - [MATH](info/MATH.txt)
+    - [test data1](info/test/courses.txt)
+    - [test data2](info/test/courses2.txt)
 
+    In the txt file, each line contains info of a course and the line is separated by ";". Line is in the following format: First part is course code (e.g. COMPSCI111); second part is course name (e.g. DIGITAL IMAGE PROC); the third part is its prereqs, which are in the format of a list of sets to represent the AND/OR relationship; forth part is units; fifth one is for quarters they are offering.
 
+    **Note:** I still need more information about the specializations in order to minimize my graph.
+4. An Schedule
+This schedule takes the quarter offering and course units into account. However, it ignores the time conflict between courses and assigns all courses in the test file to the schedule. It is not performing very well when GE courses are included.
+
+    **sample:**
+    ```
+    Taking 16 credits per quarter:
+    year 1 quarter 1: ['I&CSCI6B', 'I&CSCI31', 'MATH1A', 'I&CSCI90']
+    year 1 quarter 2: ['I&CSCI6D', 'I&CSCI51', 'I&CSCI32']
+    year 1 quarter 3: ['IN4MATX43', 'I&CSCI53+53L', 'I&CSCI33']
+    year 2 quarter 1: ['MATH1B', 'I&CSCI45C']
+    year 2 quarter 2: ['MATH2A', 'I&CSCI46']
+    year 2 quarter 3: ['MATH2B', 'COMPSCI164']
+    year 3 quarter 1: ['MATH3A', 'STATS67', 'COMPSCI161']
+    year 3 quarter 2: ['COMPSCI162', 'COMPSCI116', 'COMPSCI178', 'COMPSCI171']
+    year 3 quarter 3: ['COMPSCI163', 'COMPSCI165', 'COMPSCI175']
+    year 4 quarter 1: ['COMPSCI169']
+    year 4 quarter 2: ['COMPSCI167']
+    ```
 ## Schedule
 
 ### 2017 Winter Quarter
@@ -34,9 +56,9 @@ will also have a working application done by the end of this quarter.
 
 - **Week 2:** (Done) Apply the basic Coffman-Graham algorithm, which defines a fixed width bound $ W $, and test its performance in this particular course scheduling problem assuming that the number of classes a student takes will not exceed a fixed width bound.
 
-- **week 3:**(in progress) Collect courses information online by using web crawlers or a UCI-Course-API on GitHub.
+- **week 3:** (In progress) Collect courses information online by using web crawlers or a UCI-Course-API on GitHub.
 
-- **Week 4, 5, 6:** Modify the algorithm to solve difficulties illustrated and test the quality of the final algorithm.
+- **Week 4, 5, 6:** (In progress) Modify the algorithm to solve difficulties illustrated and test the quality of the final algorithm.
 
 - **week 7, 8, 9, 10:** Implement the algorithm by using collected data. May make a simple working command-line interface first, and if time permits, develop a web-based application.
 
