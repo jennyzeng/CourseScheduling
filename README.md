@@ -30,7 +30,7 @@ described the Coffman-graham algorithm that I will be working on, and some diffi
 
     **Note:** I still need more information about the specializations in order to minimize my graph.
 4. An Schedule
-This schedule takes the quarter offering and course units into account. However, it ignores the time conflict between courses and assigns all courses in the test file to the schedule. It is not performing very well when GE courses are included.
+This schedule takes the quarter offering and course units into account. However, it ignores the time conflict between courses and assigns all courses in the test file to the schedule. It does not perform very well when GE courses are included.
 
     **sample:**
     ```
