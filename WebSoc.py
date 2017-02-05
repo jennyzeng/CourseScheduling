@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
-from Course import Course
+import urllib.parse
+import re
 
 
 class WebSoc:
@@ -31,13 +32,75 @@ class WebSoc:
 			"Room": "",
 			"Submit": "Display Web Results"
 		}
-		self.quarterCode = {0:"2016-92",1:"2017-03",2:"2016-14"}
+		self.quarterCode = {0: "2016-92", 1: "2017-03", 2: "2016-14"}
+		self.reqURL = "https://www.reg.uci.edu/cob/prrqcgi?"
+		self.prereqInfo = {'action': 'view_all', 'term': 201703, 'dept': None}
+		self.depts = []
 
-	# def setYearTerm(self, yearTerm):
-	# 	self.formData["YearTerm"] = yearTerm
-	# 	self.quarter = int(input("please change quarter correspondingly"))
+	def main(self, depts, filename):
+		for dept in depts:
+			lines = self.makeDeptPrereqRequest(dept)
+			self._writeDeptCouresInfo(dept, lines, filename)
 
-	def getInfoByCourseNum(self, YearTerm, Dept, CourseNum):
+
+	def makeDeptPrereqRequest(self, dept):
+		self.prereqInfo['dept'] = dept
+		url = self.reqURL + urllib.parse.urlencode(self.prereqInfo)
+		resp = requests.get(url)
+		return BeautifulSoup(resp.content, "lxml"
+		                     ).find_all(
+			class_=["course", "title", "prereq"])
+
+
+	def _writeDeptCouresInfo(self, dept, lines, filename):
+		with open(filename,'a') as f:
+			for i in range(0, len(lines), 3):
+				CourseNum, title, prereqs = self._extractInfoFromLine(dept, lines[i:i + 3])
+				units, quarters = self._getMatchingUnitAndQuarter(dept, CourseNum)
+				if quarters:
+					f.write(dept.replace(" ","") +CourseNum + ";"+title+";"+str(prereqs) + ";" + units + ";" + str(quarters) +"\n")
+
+	def _extractInfoFromLine(self, dept, info):
+		num = info[0].a['name']
+		title = [i for i in info[1].stripped_strings][0]
+		prereqs = self._getPrereqs(info[2].get_text(""))
+		return num, title, prereqs
+
+	def _getMatchingUnitAndQuarter(self, dept, CourseNum):
+		quarters = set()
+		units = None
+		for key, val in self.quarterCode.items():
+			temp = self._getInfoByCourseNum(val, dept, CourseNum)
+			if temp:
+				quarters.add(key)
+				units = temp
+		if quarters:
+			return units, quarters
+		else:
+			return None, None
+
+	def _getPrereqs(self, prereq):
+		prereq = re.sub('</*b>|<br>|\\r|\\n|<.*?td.*?>', "", prereq).strip()
+		if "AND" in prereq:
+			L = prereq.split("AND")
+		else:
+			L = [prereq]
+		output = []
+		for ors in L:
+			courses = ors.split("OR")
+			orSet = set()
+			for course in courses:
+				course = re.sub("\(|\)| (\( min grade.*?\))| (\( min score.*?\))|(coreq)|( )|(recommended)",
+				                "", course).replace("&amp;", "&").replace("coreq", "")
+				if course not in ['UPPERDIVISIONST', 'INGONLY',
+				                  'BETTERseeSOCcommentsforrepeatpolicy'] and '=' not in course \
+						and not course.startswith("AP") and not course.startswith('NO') and not course.startswith(
+					'PLACEMENT'):
+					orSet.add(course)
+			if orSet: output.append(orSet)
+		return output
+
+	def _getInfoByCourseNum(self, YearTerm, Dept, CourseNum):
 		"""currently I am only getting the quarters and units
 		['34260', 'Lec', 'A', '4', 'HIRSCHBERG, D.', 'MWF  10:00-10:50', 'PCB 1100', 'Mon, Mar 20, 10:30-12:30pm','246', '157 / 173', 'n/a', '309', 'A', 'Bookstore', 'Web', 'OPEN']
 		"""
@@ -51,44 +114,24 @@ class WebSoc:
 		if lines and [i for i in lines[0].stripped_strings][0].endswith(CourseNum):
 			for line in lines[1:]:
 				L = [i for i in line.stripped_strings]
-				if L[1] == "Lec":# get units
+				if L[1] == "Lec" or L[1] == "Sem":  # get units
 					return L[3]
 		return None
-	def writeFile(self, readfilename, outfilename, dept):
-		readfile = open(readfilename,'r')
-		writefile = open(outfilename, 'w')
-		for line in readfile:
-			info = line.split(";")
-			CourseNum = info[0][len(dept.replace(" ", "")):]
-			print("writing "+dept + CourseNum)
-			quarters=set()
-			unit = None
-			for key, val in self.quarterCode.items():
-				print("searching term "+str(key))
-				info = self.getInfoByCourseNum(val, dept, CourseNum)
-				if info:
-					quarters.add(key)
-					unit = info
-			if unit:
-				writefile.write(line.strip() + ";" + unit + ";"+str(quarters)+"\n")
-		readfile.close()
-		writefile.close()
+
+
 	def forSingleCourse(self, dept, CourseNum):
 		quarters = set()
 		unit = None
 		for key, val in self.quarterCode.items():
 			print("searching term " + str(key))
-			info = self.getInfoByCourseNum(val, dept, CourseNum)
+			info = self._getInfoByCourseNum(val, dept, CourseNum)
 			if info:
 				quarters.add(key)
 				unit = info
 		if unit:
-			print(";"+unit+";"+str(quarters))
+			print(";" + unit + ";" + str(quarters))
+
+
 if __name__ == "__main__":
 	websoc = WebSoc()
-	# websoc.writeFile("info/test/", "COMPSCI")
-	# websoc.writeFile("info/test/", "STATS")
-	# websoc.writeFile("info/test/I&CSCI.txt","info/test/fullI&CSCI.txt", "I&C SCI")
-	# websoc.writeFile("info/test/", "MATH")
-	# websoc.writeFile("info/test/", "IN4MATX")
-	websoc.forSingleCourse("I&C SCI", "51")
+	websoc.main(["I&C SCI", "COMPSCI"], "test.txt")

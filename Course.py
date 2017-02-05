@@ -58,11 +58,6 @@ class Course:
 	def addQuarter(self, quarter):
 		self.quarters.update(quarter)
 
-	def setWebSocInfo(self, info):
-
-		self.units = info["units"]
-		self.quarters.update()
-
 	def setWeekdaysInWebSoc(self, days):
 		i = 0
 		while i < len(days):
@@ -208,9 +203,6 @@ class CoursesGraph:
 
 if __name__ == "__main__":
 	compsci161 = Course("DES&ANALYS OF ALGO")
-	compsci161.setWebSocInfo(
-		['34260', 'Lec', 'A', '4', 'HIRSCHBERG, D.', 'MWF  10:00-10:50', 'PCB 1100', 'Mon, Mar 20, 10:30-12:30pm',
-		 '246', '157 / 173', 'n/a', '309', 'A', 'Bookstore', 'Web', 'OPEN'])
 	print(compsci161)
 
 # SampleAdjList = {"COMPSCI 161": Course(quarter=[1, 2, 3],

@@ -19,7 +19,7 @@ class testWebSoc(unittest.TestCase):
 		self.websoc = WebSoc()
 
 	def testGetInfoByCourseNum(self):
-		self.assertEqual(self.websoc.getInfoByCourseNum("COMPSCI", "161"),
+		self.assertEqual(self.websoc._getInfoByCourseNum("COMPSCI", "161"),
 		                 {"quarter":1,"units":4})
 
 if __name__ == '__main__':

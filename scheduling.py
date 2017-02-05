@@ -56,8 +56,9 @@ def expandQueue(Q, graph, course):
 		if graph[sat].prereqIsSatisfied():
 			Q.append(sat)
 
-def widthFunc(level):
-	return len(level) == 2
+# def widthFunc(level):
+# 	return len(level) == 2
+
 def lastAccpetedLevel(L, course):
 	"""
 	after expanding L, last level of L is accepted for course
@@ -95,7 +96,7 @@ def courseScheduling(graph, widthFunc):
 			if widthFunc(L[-1], graph[cur]):  # highest level is full, should add a new level
 				L.append([])
 			lastAccpetedLevel(L, graph[cur])
-			lastStep = len(L) - 1  # last step is an accepted level for cur
+			lastStep = len(L) - 1  # highest step is an accepted level for cur
 		# start to check from the second highest level to the lowest
 		# if cur's dependents are in the current step, it will be added to the closest
 		# accepted step (last step)
@@ -116,6 +117,20 @@ def courseScheduling(graph, widthFunc):
 		expandQueue(Q, graph, cur)
 	clearEmptyLevels(L)
 	return L
+
+def addGEs(L, GEgraph, widthFunc):
+	step = 0
+	for name, ge in GEgraph.getCourses():
+		while step < len(L):
+			if widthFunc(L[step], ge):
+				step += 1
+			else:
+				L[step].append(name)
+				break
+		else:
+			L.append([name])
+
+
 
 
 if __name__ == "__main__":
