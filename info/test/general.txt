@@ -1,0 +1,39 @@
+General
+GEII
+all
+{
+GEII -1
+GEII -2
+GEII -3
+}
+;
+GEIV
+all
+{
+GEIV -1
+GEIV -2
+GEIV -3
+}
+;
+GEV
+all
+{
+GEV a
+GEV b
+}
+;
+GEVI
+all
+{
+GEVI -1
+GEVII -1
+GEVIII -1
+}
+;
+Writing
+all
+{
+WRITING 39A
+WRITING 39B
+WRITING 39C
+}
