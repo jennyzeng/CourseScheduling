@@ -4,15 +4,17 @@ import re
 class DataLoading:
 
 	def __init__(self):
-		self.websoc = WebSoc()
-	def loadCourses(graph: CoursesGraph, prereqFileName="info/test/courses.txt"):
+		pass
+
+	def loadCourses(self, graph: CoursesGraph, prereqFileName):
 		with open(prereqFileName,'r') as f:
 			for line in f:
 				info = line.strip().split(";")
-				graph.addCourse(info[0], Course(name=info[1], prereq=eval(info[2]),
-				                                units=int(info[3]), quarters=eval(info[4])))
+				graph.addCourse("".join(info[0:2]), Course(name=info[2], prereq=eval(info[3]),
+				                                units=int(info[4]), quarters=eval(info[5])))
 
-	def loadSpec(major = "Computer Science", specs=['Intelligent Systems'], filename = "info/test/spec.txt"):
+
+	def loadSpec(self, major, specs, filename):
 		hashTable = {}
 		hashTable2= {}
 		with open(filename) as f:
@@ -32,12 +34,14 @@ class DataLoading:
 					if re.match("^(all)$|^([1-9][0-9]*)$", spec[i]):
 						hashTable[spec[0]].append(set())
 						hashTable2[spec[0]].append(spec[i])
-						i+=2 # skip {
+						i+=1 # skip {
 
 					elif spec[i] == "}":
 						# change keys at end
 						if hashTable2[spec[0]][-1]=="all":
 							hashTable2[spec[0]][-1] = len(hashTable[spec[0]][-1])
+						elif hashTable2[spec[0]][-1] =="recommend":# TODO: need modify later
+							hashTable2[spec[0]][-1] = len(hashTable[spec[0]][-1])//2
 						else:
 							hashTable2[spec[0]][-1] = eval(hashTable2[spec[0]][-1] )
 						i+=1

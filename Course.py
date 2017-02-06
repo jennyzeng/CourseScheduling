@@ -44,6 +44,7 @@ class Course:
 		self.endTime = endTime
 		self.weekdays = weekdays if weekdays else []
 		self.prereqBool = [None] * len(self.prereq)
+		self.satSpecs = set()
 
 	def __str__(self):
 		return "name: {name}\n" \
@@ -51,9 +52,11 @@ class Course:
 		       "quarters: {quar}\n" \
 		       "prereq: {prereq}\n" \
 		       "weekdays: {weekdays}\n" \
-		       "satisfy: {sat}".format(
+		       "satisfyCourse: {sat}\n" \
+		       "satisfySpec:{spec}".format(
 			name=self.name, units=self.units,
-			quar=self.quarters, prereq=self.prereq, weekdays=self.weekdays, sat=self.satisfy)
+			quar=self.quarters, prereq=self.prereq, weekdays=self.weekdays, sat=self.satisfy,
+			spec=self.satSpecs)
 
 	def addQuarter(self, quarter):
 		self.quarters.update(quarter)
@@ -75,6 +78,12 @@ class Course:
 
 	def addSatisfy(self, satisfy):
 		self.satisfy.add(satisfy)
+
+	def addSpec(self, spec, num):
+		self.satSpecs.add((spec, num))  # spec is a tuple
+
+	def getSpecs(self):
+		return self.satSpecs
 
 	def getPrereq(self):
 		return self.prereq
@@ -107,8 +116,10 @@ class Course:
 	def conflict(self, course):
 		"""time conflict of two courses"""
 		return False
+
 	def isValidQuarter(self, quarter):
-		return quarter%3 in self.quarters
+		return quarter % 3 in self.quarters
+
 
 class CoursesGraph:
 	def __init__(self, adjList=None):
@@ -167,6 +178,20 @@ class CoursesGraph:
 				for sat in preq:
 					if sat in self.adjList:
 						self[sat].addSatisfy(name)
+
+	def addSpec(self, name, spec, num):
+		if name in self:
+			self[name].addSpec(spec, num)
+			return True
+		else:
+			return False
+
+	def loadSpecs(self, SpecsCourse):
+		for spec, courseSetList in SpecsCourse.items():
+			for i in range(len(courseSetList)):
+				for c in courseSetList[i]:
+					self.addSpec(c, spec, i)
+		return
 
 	def getCourses(self):
 		"""

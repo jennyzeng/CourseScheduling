@@ -56,8 +56,6 @@ def expandQueue(Q, graph, course):
 		if graph[sat].prereqIsSatisfied():
 			Q.append(sat)
 
-# def widthFunc(level):
-# 	return len(level) == 2
 
 def lastAccpetedLevel(L, course):
 	"""
@@ -72,14 +70,30 @@ def clearEmptyLevels(L):
 	while L and not L[-1]:
 		L.pop()
 
-def courseScheduling(graph, widthFunc):
+
+def multiGraphScheduling(graphList, widthFunc):
+	L = [[]]
+	for graph, SpecsNum in graphList:
+		L = courseScheduling(graph, widthFunc, L,SpecsNum)
+	return L
+
+
+def courseScheduling(graph:CoursesGraph, widthFunc,L,SpecsNum):
 	# initialize my queue
 	Q = iniQueue(graph)
 
 	if not Q: return None
-	L = [[]]  # output
+	# L = [[]]  # output
 	while Q:
 		cur = Q.popleft()
+		satSpecs = graph[cur].getSpecs()# {('Lower-division', 1)}
+		remain = False
+		for specName, index in satSpecs:
+			if SpecsNum[specName][index] > 0:
+				remain = True
+				SpecsNum[specName][index] -=1
+		if not remain: # this course is not required
+			continue
 
 		# if the highest level has dependents, it has to be assigned to a new level
 		for v in L[-1]:
@@ -118,31 +132,19 @@ def courseScheduling(graph, widthFunc):
 	clearEmptyLevels(L)
 	return L
 
-def addGEs(L, GEgraph, widthFunc):
-	step = 0
-	for name, ge in GEgraph.getCourses():
-		while step < len(L):
-			if widthFunc(L[step], ge):
-				step += 1
-			else:
-				L[step].append(name)
-				break
-		else:
-			L.append([name])
 
 
 
-
-if __name__ == "__main__":
-	adjList = {
-		"a": Course(units=4.0, quarter=[0], prereq=[]),
-		"b": Course(units=4.0, quarter=[1], prereq=[{"a"}]),
-		"c": Course(units=2.0, quarter=[1, 2], prereq=[{"b"}]),
-		"d": Course(units=1.5, quarter=[1, 2], prereq=[{"a", "c"}, {"k", "e"}]),  # k is not in the adjList
-		"e": Course(units=3.5, quarter=[1, 2], prereq=[]),
-		"f": Course(units=2.0, quarter=[1, 2], prereq=[{"a", "c"}])
-	}
-	graph = CoursesGraph(adjList)
-	graph.updateSatisfies()
+# if __name__ == "__main__":
+	# adjList = {
+	# 	"a": Course(units=4.0, quarter=[0], prereq=[]),
+	# 	"b": Course(units=4.0, quarter=[1], prereq=[{"a"}]),
+	# 	"c": Course(units=2.0, quarter=[1, 2], prereq=[{"b"}]),
+	# 	"d": Course(units=1.5, quarter=[1, 2], prereq=[{"a", "c"}, {"k", "e"}]),  # k is not in the adjList
+	# 	"e": Course(units=3.5, quarter=[1, 2], prereq=[]),
+	# 	"f": Course(units=2.0, quarter=[1, 2], prereq=[{"a", "c"}])
+	# }
+	# graph = CoursesGraph(adjList)
+	# graph.updateSatisfies()
 	# print(iniQueue(graph))
-	print(courseScheduling(graph, widthFunc))
+	# print(courseScheduling(graph, widthFunc))

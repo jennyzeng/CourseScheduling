@@ -1,103 +1,187 @@
-Computer Science Major
-General
+Computer Science
 Lower-division
 all
 {
-I&C SCI 31	Introduction to Programming
-I&C SCI 32	Programming with Software Libraries
-I&C SCI 33	Intermediate Programming
-I&C SCI 45C	Programming in C/C++ as a Second Language
-I&C SCI 46	Data Structure Implementation and Analysis
-I&C SCI 51	Introductory Computer Organization
-I&C SCI 53	Principles in System Design
-I&C SCI 53L	Principles in System Design Library
-I&C SCI 90	New Students Seminar
-IN4MATX 43	Introduction to Software EngineeringMATH 2A,
-MATH 2A		Single-Variable Calculus
-MATH 2B		Single-Variable Calculus
-I&C SCI 6B	Boolean Algebra and Logic
-I&C SCI 6D	Discrete Mathematics for Computer Science
+I&CSCI 31
+I&CSCI 32
+I&CSCI 33
+I&CSCI 45C
+I&CSCI 46
+I&CSCI 51
+I&CSCI 53
+I&CSCI 53L
+I&CSCI 90
+IN4MATX 43
+MATH 2A
+MATH 2B
+I&CSCI 6B
+I&CSCI 6D
+STATS 67
+}
+1
 {
-I&C SCI 6N	Computational Linear Algebra
+I&CSCI 6N
 MATH 3A
-}		Introduction to Linear Algebra
-STATS 67	Introduction to Probability and Statistics for Computer Science
 }
 ;
 Upper-division
 all
 {
-COMPSCI 161	Design and Analysis of Algorithms
-I&C SCI 139W	Critical Writing on Information Technology
+COMPSCI 161
+I&CSCI 139W
 }
 ;
 Algorithms
 all
 {
-COMPSCI 162	Formal Languages and Automata
-COMPSCI 163	Graph Algorithms
-COMPSCI 164	Computational Geometry and Geometric Modeling
-COMPSCI 165	Project In Algorithms And Data Structures
-COMPSCI 167	Introduction to Applied Cryptography
-COMPSCI 169	Introduction to Optimization
+COMPSCI 162
+COMPSCI 163
+COMPSCI 164
+COMPSCI 165
+COMPSCI 167
+COMPSCI 169
 }
 ;
-Architecture and Embedded Systems
 4
 {
-COMPSCI 144	High-performance Computers and Program Optimization
+COMPSCI 144
 COMPSCI 145
-COMPSCI 145L		Embedded Software and Embedded Software Laboratory
-COMPSCI 151	Digital Logic Design
-COMPSCI 152	Computer Systems Architecture
-COMPSCI 153	Logic Design Laboratory
-COMPSCI 154	Computer Design Laboratory
+COMPSCI 145L
+COMPSCI 151
+COMPSCI 152
+COMPSCI 153
+COMPSCI 154
 }
 recommend
-COMPSCI 131	Parallel and Distributed Computing
-COMPSCI 142A	Compilers and Interpreters
-COMPSCI 143A	Principles of Operating Systems
+COMPSCI 131
+COMPSCI 142A
+COMPSCI 143A
 ;
 Bioinformatics
 all
 {
-COMPSCI 184A	Representations and Algorithms for Molecular Biology
+COMPSCI 184A
 }
 2
 {
-COMPSCI 172B	Neural Networks and Deep Learning
-COMPSCI 184B	Probabilistic Modeling of Biological Data
-COMPSCI 184C	Computational Systems Biology
-COMPSCI 189	Project in Bioinformatics
+COMPSCI 172B
+COMPSCI 184B
+COMPSCI 184C
+COMPSCI 189
 }
 ;
 Information
 all
 {
-COMPSCI 121,
-COMPSCI 122A,
+COMPSCI 121
+COMPSCI 122A
 COMPSCI 178
 }
 4
 {
-I&C SCI 45J,
-COMPSCI 122B,
-COMPSCI 125,
-COMPSCI 132,
-COMPSCI 134,
-COMPSCI 141,
-COMPSCI 142A,
-COMPSCI 143A,
-COMPSCI 163,
-COMPSCI 165,
-COMPSCI 167,
-COMPSCI 179,
+I&CSCI 45J
+COMPSCI 122B
+COMPSCI 125
+COMPSCI 132
+COMPSCI 134
+COMPSCI 141
+COMPSCI 142A
+COMPSCI 143A
+COMPSCI 163
+COMPSCI 165
+COMPSCI 167
+COMPSCI 179
 }
 1
 {
-COMPSCI 122B,
-COMPSCI 125,
-COMPSCI 179,
+COMPSCI 122B
+COMPSCI 125
+COMPSCI 179
+}
+1
+{
+COMPSCI 122B
+COMPSCI 125
+COMPSCI 179
 }
 ;
-
+Intelligent Systems
+all
+{
+COMPSCI 171
+COMPSCI 175
+COMPSCI 178
+}
+1
+{
+COMPSCI 177
+COMPSCI 179
+}
+1
+{
+COMPSCI 162
+COMPSCI 163
+COMPSCI 164
+COMPSCI 169
+}
+1
+{
+COMPSCI 116
+COMPSCI 121
+COMPSCI 125
+COMPSCI 174
+COMPSCI 184B
+}
+;
+Networked Systems
+all
+{
+COMPSCI 132
+COMPSCI 133
+COMPSCI 134
+COMPSCI 143A
+}
+1
+{
+COMPSCI 122B
+COMPSCI 143B
+}
+2
+{
+COMPSCI 122A
+COMPSCI 131
+COMPSCI 137
+COMPSCI 167
+COMPSCI 145-145L
+COMPSCI 163
+COMPSCI 169
+}
+;
+Systems and Software
+3
+{
+COMPSCI 131
+COMPSCI 141
+COMPSCI 142A
+COMPSCI 142B
+COMPSCI 143A
+COMPSCI 143B
+}
+recommend
+{
+COMPSCI 132
+COMPSCI 134
+COMPSCI 144
+COMPSCI 152
+}
+;
+Visual Computing
+4
+{
+COMPSCI 111
+COMPSCI 112
+COMPSCI 114
+COMPSCI 116
+COMPSCI 117
+I&C SCI 162
+}

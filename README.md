@@ -5,6 +5,13 @@ In my initial plan, I illustrated my main idea of the course scheduling project,
 described the Coffman-graham algorithm that I will be working on, and some difficulties as well as interesting points.
 [research-initial-plan.pdf](research-initial-plan.pdf)
 
+## TODOs
+1. solve the problem that some courses are upper division student only
+2. it should pick more courses randomly to fullfill the 11 upper requirement
+3. some courses are also GEs, should not take GEs again.
+4. load data into database
+5. refactor code.
+
 ## Current Results
 1. Original coffman-graham algorithm.
     - [directedGraphRepresentation](coffman_graham_algorithm/directedGraphRepresentation.py)
@@ -15,34 +22,37 @@ described the Coffman-graham algorithm that I will be working on, and some diffi
 
     - Right now it still cannot get those courses without prereqs automatically
 
-3. Courses information I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I am still working on improving the code of my crawlers.
+3. Courses information I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I integrated my crawlers into one on week 4 in Winter quarter.
 
-    **samples**:
-    - [WRITING, I&C SCI, COMPSCI Depts data](info/test/new.txt)
-    - [test data1](info/test/courses.txt)
-    - [test data2](info/test/courses2.txt)
+    **sample**:
+    - [WRITING, I&C SCI, COMPSCI Depts data](info/test/fullcourses.txt)
 
-    In the txt file, each line contains info of a course and the line is separated by ";". Line is in the following format: First part is course code (e.g. COMPSCI111); second part is course name (e.g. DIGITAL IMAGE PROC); the third part is its prereqs, which are in the format of a list of sets to represent the AND/OR relationship; forth part is units; fifth one is for quarters they are offering.
+    In the txt file, each line contains info of a course and the line is separated by ";". Line is in the following format:
+    [department code];[course num];[title];[prereqs];[units];[quarters]
+    e.g.
+    I&CSCI;6D;DISCRET MATH FOR CS;[{'I&CSCI6B'}];4;{0, 1, 2}
 
-    **Note:** I still need more information about the specializations in order to minimize my graph.
+4. CS specializations information I got manually from [catalogue.uci.edu](http://catalogue.uci.edu/donaldbrenschoolofinformationandcomputersciences/departmentofcomputerscience/#majorstext)
+
+    **sample**:
+    - [CS specializations](info/specializations.txt)
+
+
 4. A Simple Schedule
 
-    This schedule takes the quarter offering and course units into account. However, it ignores the time conflict between courses and assigns all courses in the test file to the schedule. It does not perform very well when GE courses are included.
+    This schedule takes GE requirement, specialization requirement, the quarter offering and course units into account. It adds GE requirement later after major requirement courses are assigned.
 
     **sample:**
     ```
     Taking 16 credits per quarter:
-    year 1 quarter 1: ['I&CSCI90', 'WRITING39A', 'I&CSCI31', 'MATH2A']
-    year 1 quarter 2: ['I&CSCI6B', 'WRITING39B', 'I&CSCI32', 'MATH2B']
-    year 1 quarter 3: ['IN4MATX43', 'I&CSCI6D', 'I&CSCI51']
-    year 2 quarter 1: ['WRITING39C', 'I&CSCI33', 'MATH3A', 'STATS67']
-    year 2 quarter 2: ['I&CSCI53+53L', 'I&CSCI45C', 'COMPSCI178', 'GEVI']
-    year 2 quarter 3: ['I&CSCI46', 'GEVa', 'GEVIII', 'GEII-3']
-    year 3 quarter 1: ['COMPSCI169', 'COMPSCI161', 'COMPSCI171', 'GEIV-1']
-    year 3 quarter 2: ['COMPSCI162', 'COMPSCI116', 'COMPSCI167', 'COMPSCI175']
-    year 3 quarter 3: ['COMPSCI164', 'COMPSCI165', 'COMPSCI163', 'GEII-1']
-    year 4 quarter 1: ['GEIV-2', 'GEII-2', 'GEVII', 'GEVb']
-    year 4 quarter 2: ['GEIV-3']
+    year 1 quarter 1: ['I&CSCI6B', 'I&CSCI31', 'MATH2A', 'I&CSCI90']
+    year 1 quarter 2: ['I&CSCI6D', 'COMPSCI125', 'I&CSCI51']
+    year 1 quarter 3: ['I&CSCI32', 'MATH2B', 'GEVII-1', 'GEVb']
+    year 2 quarter 1: ['IN4MATX43', 'I&CSCI33', 'STATS67', 'MATH3A']
+    year 2 quarter 2: ['I&CSCI45C', 'COMPSCI178', 'GEVIII-1', 'GEII-2']
+    year 2 quarter 3: ['I&CSCI46', 'GEIV-2', 'GEIV-3', 'GEII-1']
+    year 3 quarter 1: ['COMPSCI169', 'COMPSCI171', 'COMPSCI161', 'GEII-3']
+    year 3 quarter 2: ['COMPSCI175', 'GEIV-1', 'GEVa', 'GEVI-1']
     ```
 
 ## Schedule
@@ -54,7 +64,7 @@ will also have a working application done by the end of this quarter.
 
 - **Week 2:** (Done) Apply the basic Coffman-Graham algorithm, which defines a fixed width bound $ W $, and test its performance in this particular course scheduling problem assuming that the number of classes a student takes will not exceed a fixed width bound.
 
-- **week 3:** (In progress) Collect courses information online by using web crawlers or a UCI-Course-API on GitHub.
+- **week 3:** (Done) Collect courses information online by using web crawlers.
 
 - **Week 4, 5, 6:** (In progress) Modify the algorithm to solve difficulties illustrated and test the quality of the final algorithm.
 
