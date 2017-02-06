@@ -51,14 +51,18 @@ class WebSoc:
 		                     ).find_all(
 			class_=["course", "title", "prereq"])
 
-
+	def _DBwriteDeptCouresInfo(self, dept, lines):
+		# db = MySQLdb.connect(host='localhost', user='root', passwd='Jenny186200@', db='CS-h198')
+		# cursor = db.cursor()
+		# cursor.execute("")
+		pass
 	def _writeDeptCouresInfo(self, dept, lines, filename):
 		with open(filename,'a') as f:
 			for i in range(0, len(lines), 3):
 				CourseNum, title, prereqs = self._extractInfoFromLine(dept, lines[i:i + 3])
 				units, quarters = self._getMatchingUnitAndQuarter(dept, CourseNum)
 				if quarters:
-					f.write(dept.replace(" ","") +CourseNum + ";"+title+";"+str(prereqs) + ";" + units + ";" + str(quarters) +"\n")
+					f.write(dept.replace(" ","") +";"+CourseNum + ";"+title+";"+str(prereqs) + ";" + units + ";" + str(quarters) +"\n")
 
 	def _extractInfoFromLine(self, dept, info):
 		num = info[0].a['name']
@@ -134,4 +138,4 @@ class WebSoc:
 
 if __name__ == "__main__":
 	websoc = WebSoc()
-	websoc.main(["I&C SCI", "COMPSCI"], "test.txt")
+	websoc.main(["I&C SCI", "COMPSCI","MATH","STATS", "IN4MATX"], "fullcourses.txt")

@@ -7,19 +7,16 @@ def widthFunc(level, course):
 	return sum([graph[c].units if graph[c] else geGraph[c].units for c in level]
 	           ) + course.units > creditsPerQuarter
 
-
+SpecsCourse,SpecsNum = DataLoading.loadSpec()
 graph = CoursesGraph()
-DataLoading.loadPrereq(graph, "info/test/courses4.txt")
+DataLoading.loadCourses(graph, "info/test/courses4.txt")
 graph.updateSatisfies()
-# print(graph)
 print("Taking %d credits per quarter: " % (creditsPerQuarter))
-L = courseScheduling(graph, widthFunc)
+L = courseScheduling(graph, widthFunc, SpecsCourse, SpecsNum)
 geGraph = CoursesGraph()
-DataLoading.loadPrereq(geGraph, "info/test/ge.txt")
-# print(geGraph)
+DataLoading.loadCourses(geGraph, "info/test/ge.txt")
 addGEs(L, geGraph, widthFunc)
 for i, L in enumerate(L):
-
 	print("year %d quarter %d:" % (i // 3 + 1, i % 3 + 1), L)
 
 """
