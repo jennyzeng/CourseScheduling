@@ -39,6 +39,8 @@ class WebSoc:
 
 	def main(self, depts, filename):
 		for dept in depts:
+			print("----------------------------")
+			print("writing depts: ", dept)
 			lines = self.makeDeptPrereqRequest(dept)
 			self._writeDeptCouresInfo(dept, lines, filename)
 
@@ -59,16 +61,18 @@ class WebSoc:
 	def _writeDeptCouresInfo(self, dept, lines, filename):
 		with open(filename,'a') as f:
 			for i in range(0, len(lines), 3):
-				CourseNum, title, prereqs = self._extractInfoFromLine(dept, lines[i:i + 3])
+				CourseNum, title, prereqs, condition = self._extractInfoFromLine(lines[i:i + 3])
 				units, quarters = self._getMatchingUnitAndQuarter(dept, CourseNum)
 				if quarters:
-					f.write(dept.replace(" ","") +";"+CourseNum + ";"+title+";"+str(prereqs) + ";" + units + ";" + str(quarters) +"\n")
+					f.write(dept.replace(" ","") +";"+CourseNum + ";"+title+";"+str(prereqs) +
+					        ";" + units + ";" + str(quarters) + ";" + str(condition) +"\n")
+					print("wrote course", dept, CourseNum)
 
-	def _extractInfoFromLine(self, dept, info):
+	def _extractInfoFromLine(self, info):
 		num = info[0].a['name']
 		title = [i for i in info[1].stripped_strings][0]
-		prereqs = self._getPrereqs(info[2].get_text(""))
-		return num, title, prereqs
+		prereqs,condition = self._getPrereqs(info[2].get_text(""))
+		return num, title, prereqs, condition
 
 	def _getMatchingUnitAndQuarter(self, dept, CourseNum):
 		quarters = set()
@@ -84,6 +88,7 @@ class WebSoc:
 			return None, None
 
 	def _getPrereqs(self, prereq):
+		condition = set()
 		prereq = re.sub('</*b>|<br>|\\r|\\n|<.*?td.*?>', "", prereq).strip()
 		if "AND" in prereq:
 			L = prereq.split("AND")
@@ -96,13 +101,17 @@ class WebSoc:
 			for course in courses:
 				course = re.sub("\(|\)| (\( min grade.*?\))| (\( min score.*?\))|(coreq)|( )|(recommended)",
 				                "", course).replace("&amp;", "&").replace("coreq", "")
-				if course not in ['UPPERDIVISIONST', 'INGONLY',
-				                  'BETTERseeSOCcommentsforrepeatpolicy'] and '=' not in course \
-						and not course.startswith("AP") and not course.startswith('NO') and not course.startswith(
+				# add upper division standing
+				if course in [ 'UPPERDIVISIONST','ENTRYLEVELWRITING','LOWERDIVISIONWRITING']:
+					condition.add(course)
+
+				elif course not in [ 'INGONLY', 'BETTERseeSOCcommentsforrepeatpolicy'] \
+						and '=' not in course and not course.startswith("AP") and \
+						not course.startswith('NO') and not course.startswith(
 					'PLACEMENT'):
 					orSet.add(course)
 			if orSet: output.append(orSet)
-		return output
+		return output, condition
 
 	def _getInfoByCourseNum(self, YearTerm, Dept, CourseNum):
 		"""currently I am only getting the quarters and units

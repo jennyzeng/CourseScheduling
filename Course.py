@@ -33,45 +33,42 @@ weekDayCode = {"M": 0, "Tu": 1, "W": 2, "Th": 3, "F": 4}
 
 
 class Course:
-	def __init__(self, name, units=None, quarters=None, prereq=None, satisfy=None,
-	             startTime=None, endTime=None, weekdays=None):
+	def __init__(self, name, condition=None, units=None, quarters=None, prereq=None, satisfy=None):
 		self.name = name
 		self.quarters = quarters if quarters else {}
 		self.units = units if units else None
 		self.prereq = prereq if prereq else []
 		self.satisfy = satisfy if satisfy else set()
-		self.startTime = startTime
-		self.endTime = endTime
-		self.weekdays = weekdays if weekdays else []
 		self.prereqBool = [None] * len(self.prereq)
 		self.satSpecs = set()
+		self.condition = condition if condition else set()
 
 	def __str__(self):
 		return "name: {name}\n" \
 		       "units: {units}\n" \
 		       "quarters: {quar}\n" \
 		       "prereq: {prereq}\n" \
-		       "weekdays: {weekdays}\n" \
 		       "satisfyCourse: {sat}\n" \
-		       "satisfySpec:{spec}".format(
+		       "satisfySpec:{spec}\n" \
+		       "conditions: {con}".format(
 			name=self.name, units=self.units,
-			quar=self.quarters, prereq=self.prereq, weekdays=self.weekdays, sat=self.satisfy,
-			spec=self.satSpecs)
+			quar=self.quarters, prereq=self.prereq, sat=self.satisfy,
+			spec=self.satSpecs,con=self.condition )
 
 	def addQuarter(self, quarter):
 		self.quarters.update(quarter)
 
-	def setWeekdaysInWebSoc(self, days):
-		i = 0
-		while i < len(days):
-			code = weekDayCode.get(days[i])
-			if code != None:
-				self.weekdays.append(code)
-				i += 1
-			else:
-				code = weekDayCode.get(days[i:i + 2])
-				self.weekdays.append(code)
-				i += 2
+	# def setWeekdaysInWebSoc(self, days):
+	# 	i = 0
+	# 	while i < len(days):
+	# 		code = weekDayCode.get(days[i])
+	# 		if code != None:
+	# 			self.weekdays.append(code)
+	# 			i += 1
+	# 		else:
+	# 			code = weekDayCode.get(days[i:i + 2])
+	# 			self.weekdays.append(code)
+	# 			i += 2
 
 	def addPrereq(self, prereq):
 		self.prereq.append(prereq)
@@ -113,9 +110,9 @@ class Course:
 	def prereqIsSatisfied(self):
 		return all(self.prereqBool)
 
-	def conflict(self, course):
-		"""time conflict of two courses"""
-		return False
+	# def conflict(self, course):
+	# 	"""time conflict of two courses"""
+	# 	return False
 
 	def isValidQuarter(self, quarter):
 		return quarter % 3 in self.quarters

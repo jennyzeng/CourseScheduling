@@ -83,9 +83,9 @@ def courseScheduling(graph:CoursesGraph, widthFunc,L,SpecsNum):
 	Q = iniQueue(graph)
 
 	if not Q: return None
-	# L = [[]]  # output
 	while Q:
 		cur = Q.popleft()
+		# check if satisfy specifications
 		satSpecs = graph[cur].getSpecs()# {('Lower-division', 1)}
 		remain = False
 		for specName, index in satSpecs:
@@ -111,6 +111,7 @@ def courseScheduling(graph:CoursesGraph, widthFunc,L,SpecsNum):
 				L.append([])
 			lastAccpetedLevel(L, graph[cur])
 			lastStep = len(L) - 1  # highest step is an accepted level for cur
+
 		# start to check from the second highest level to the lowest
 		# if cur's dependents are in the current step, it will be added to the closest
 		# accepted step (last step)

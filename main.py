@@ -11,6 +11,7 @@ def widthFunc(level, course):
 
 
 # data loading
+## for Computer Science graph
 SpecsCourse, SpecsNum = DataLoading().loadSpec(major="Computer Science",
                                                specs=["Lower-division", "Upper-division", "Intelligent Systems"],
                                                filename="info/specializations.txt")
@@ -18,10 +19,13 @@ graph = CoursesGraph()
 DataLoading().loadCourses(graph, "info/test/fullcourses.txt")
 graph.updateSatisfies()
 graph.loadSpecs(SpecsCourse)
+
+## ge graph
 geGraph = CoursesGraph()
 DataLoading().loadCourses(geGraph, "info/test/ge.txt")
-generalCourse, generalSpecsNum = DataLoading().loadSpec(
-	major="General", specs=["GEII", "GEIV", "GEV", "GEVI", "Writing"], filename="info/test/general.txt")
+generalCourse, generalSpecsNum = DataLoading().loadSpec(major="General",
+                                                        specs=["GEII", "GEIV", "GEV", "GEVI", "Writing"],
+                                                        filename="info/test/general.txt")
 geGraph.loadSpecs(generalCourse)
 # print(graph)
 
