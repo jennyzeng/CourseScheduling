@@ -32,7 +32,7 @@ scheduling for all the graphs.
 
 - define the number of levels in L to be m. 0<m<n
 
-- difine the maximum width of a level to be w.  0<w<n and w = n/m
+- define the maximum width of a level to be w.  0<w<n and w = n/m
 
 ```
 INPUT: a course graph
@@ -40,31 +40,32 @@ OUTPUT: L
 
 initialize Q, queue, and add courses without prereqs into it
 
-while Q is not empty: # O(n) times
+while Q is not empty:                           # O(n) times
     currentCourse = Q.pop()         # O(1)
-    while Q is not empty and current Course is upper division standing only: # O(n)
-        # note this part may results in infinite loop if all
-        # courses in Q is upper division standing only
+    while Q is not empty and current Course is upper division standing only:    # O(n)
         push currentCourse to the end of Q
         currentCourse = Q.pop()
+        return L if the it already looped through all of the courses in Q
+            and still cannot find one that can be assigned
 
     discard currentCourse if it does not satisfy any specializations
 
-    if the highest Level in L has currentCourse's dependent(prereq): # O(w)
+    if the highest Level in L has currentCourse's dependent(prereq):            # O(w)
         it will create new levels until it find the nearest quarter that
         this course is offered.
         Then the course will be assigned to this level
 
-    else:       # the highest level does not has cur's dependents
+    else:       # the highest level does not have cur's dependents
         step = the second highest level index
-        if the highest level is full, we have to create a new level     # O(w)
+        if the highest level is full, we have to create a new level
             and then create more levels until it find the nearest quarter that
-            this course is offered.
-        lastStep = the highest level index # the lowest acceptable level index so far
+            this course is offered.                                             # O(w)
+        lastStep = the highest level index (lowest acceptable one so far)
 
-        while the currentCourse is not assigned to the schedule and step >=0: # O(m) times
 
-            if there are dependents in level L[step],   # O(w)
+        while the currentCourse is not assigned to the schedule and step >= 0: # O(m) times
+
+            if there are dependents in level L[step]:           # O(w)
                 it cannot be assigned to a higher level,
                  we assign it to the level L[lastStep]
 
@@ -79,7 +80,7 @@ while Q is not empty: # O(n) times
             course will be assigned to the lowest acceptable level L[lastStep]
 
         we are sure that the course is assigned, then we will add those courses
-            that will be satisfied after assigning this course into Q
+            that will be satisfied after assigning this course into Q           # O(n)
 
         add currentCourse units into the total units assigned
 
@@ -94,7 +95,8 @@ O(1) because it will create at most 3 levels for a course
 - between first while loop and the third one: O(n+2w) = O(n+w)=O(n)
 - third while loop: O(m) times
 - in third while loop: O(2w) = O(w)
-- total is O(n)\*(O(n)+O(m)\*O(w)) = O(n)\*(O(n)+O(n)) = O(n^2)
+- lastly, expanding Q is O(n)
+- total is O(n)\*(O(n)+O(m)\*O(w) + O(n)) = O(n)\*O(3n) = O(n^2)
 
 
 

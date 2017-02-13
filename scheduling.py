@@ -115,9 +115,11 @@ class CourseScheduling:
 
 		while Q:
 			cur = Q.popleft()
+			first = cur
 			while Q and not self.courseConditions(graph[cur]):
 					Q.append(cur)
 					cur = Q.popleft()
+					if cur == first: return self.L
 
 			# check if satisfy specializations
 			satSpecs = graph[cur].getSpecs()  # {('Lower-division', 1)}
