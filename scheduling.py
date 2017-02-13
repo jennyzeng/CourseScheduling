@@ -113,21 +113,11 @@ class CourseScheduling:
 		Q, Q2 = self.iniQueue(graph)
 		# Q2 is the queue for special conditions
 
-		while Q or Q2:
-			cur = None
-			for c in Q2:
-				if self.courseConditions(graph[c]):
-					cur = c
-					Q2.remove(cur)
-					break
-
-			else:
-				if Q:
+		while Q:
+			cur = Q.popleft()
+			while Q and not self.courseConditions(graph[cur]):
+					Q.append(cur)
 					cur = Q.pop()
-				while Q and not self.courseConditions(graph[cur]):
-					Q2.append(cur)
-					cur = Q.pop()
-			if not cur: break
 
 			# check if satisfy specifications
 			satSpecs = graph[cur].getSpecs()  # {('Lower-division', 1)}

@@ -148,4 +148,4 @@ class WebSoc:
 if __name__ == "__main__":
 	websoc = WebSoc()
 	# websoc.main(["I&C SCI", "COMPSCI","MATH","STATS", "IN4MATX"], "fullcourses.txt")
-	websoc.main(["WRITING"], "fullcourses.txt")
+	websoc.main(["POL SCI"], "fullcourses.txt")

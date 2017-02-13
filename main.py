@@ -31,8 +31,10 @@ geGraph.loadSpecs(generalCourse)
 
 SpecsTable.update(generalSpecsTable)
 
+
+# graph.mergeGraph(geGraph)
 # scheduling
-L = CourseScheduling([graph, geGraph], SpecsTable).multiGraphScheduling()
+L = CourseScheduling([graph,geGraph], SpecsTable).multiGraphScheduling()
 
 print("Taking %d credits per quarter: " % (creditsPerQuarter))
 for i, L in enumerate(L):

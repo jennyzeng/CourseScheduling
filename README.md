@@ -6,54 +6,64 @@ described the Coffman-graham algorithm that I will be working on, and some diffi
 [research-initial-plan.pdf](research-initial-plan.pdf)
 
 ## TODOs
-1. solve the problem that some courses are upper division student only
-2. it should pick more courses randomly to fullfill the 11 upper requirement
-3. some courses are also GEs, should not take GEs again.
-4. load data into database
-5. refactor code.
+1. some courses are also GEs, should not take GEs again.(need so much more infomation, may avoid doing this part to better research algorithms)
+2. refactor code.
 
 ## Current Results
-1. Original coffman-graham algorithm.
+1. solve the problem that some courses are upper division student only.
+
+    - method 1: adding another queue: this still cannot solve the problem that some courses will be added to a lower division level. May solve later after refactor the scheduling code. 
+    
+    - method 2: pushing this course back into the end of the queue. This somewhat guarantees that this course will not show up too early until some other courses that are not upper division students only are assigned. However, if there are so many courses like GE in the queue, then it will deplay the process. (Having GEs when scheduling will result in a worse schedule)
+
+2. it can pick more courses randomly to fullfill the 11 upper requirement after loading 11 upper requirement in the specialization txt file. 
+
+3. A Simple Schedule
+
+    This schedule takes GE requirement, specialization requirement, the quarter offering and course units into account.
+     It adds GE requirement later after major requirement courses are assigned. (on average this can get a better result than adding them together)
+
+    **sample:**
+    ```
+    Taking 16 credits per quarter:
+    year 1 quarter 1: ['I&CSCI90', 'I&CSCI31', 'I&CSCI6B', 'MATH2A']
+    year 1 quarter 2: ['IN4MATX131', 'I&CSCI32', 'I&CSCI6D', 'MATH2B']
+    year 1 quarter 3: ['I&CSCI51', 'I&CSCI33', 'IN4MATX43']
+    year 2 quarter 1: ['MATH3A', 'STATS67', 'COMPSCI151', 'I&CSCI45C']
+    year 2 quarter 2: ['COMPSCI122A', 'IN4MATX113', 'COMPSCI178', 'COMPSCI152']
+    year 2 quarter 3: ['COMPSCI132', 'COMPSCI154', 'I&CSCI46', 'GEIV-3']
+    year 3 quarter 1: ['COMPSCI184A', 'COMPSCI169', 'IN4MATX115', 'COMPSCI171']
+    year 3 quarter 2: ['COMPSCI133', 'COMPSCI161', 'COMPSCI116', 'COMPSCI175']
+    year 3 quarter 3: ['GEVIII-1', 'GEIV-2', 'GEVII-1', 'GEVI-1']
+    year 4 quarter 1: ['GEII-1', 'GEIV-1', 'GEII-2']
+    ```
+
+4. Original coffman-graham algorithm.
     - [directedGraphRepresentation](coffman_graham_algorithm/directedGraphRepresentation.py)
     - [coffman-graham algorithm](coffman_graham_algorithm/coffman-grapham.py)
 
-2. Crawler
+5. Crawler
     - [WebSoc and prerequistes Crawler (using beautiful soup and requests libraries)](WebSoc.py)
 
     - Right now it still cannot get those courses without prereqs automatically
 
-3. Courses information I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I integrated my crawlers into one on week 4 in Winter quarter.
+6. Courses information I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I integrated my crawlers into one on week 4 in Winter quarter.
 
     **sample**:
     - [WRITING, I&C SCI, COMPSCI Depts data](info/test/fullcourses.txt)
 
     In the txt file, each line contains info of a course and the line is separated by ";". Line is in the following format:
-    [department code];[course num];[title];[prereqs];[units];[quarters]
+    ```[department code];[course num];[title];[prereqs];[units];[quarters]```
     e.g.
-    I&CSCI;6D;DISCRET MATH FOR CS;[{'I&CSCI6B'}];4;{0, 1, 2}
+    ```I&CSCI;6D;DISCRET MATH FOR CS;[{'I&CSCI6B'}];4;{0, 1, 2}```
 
-4. CS specializations information I got manually from [catalogue.uci.edu](http://catalogue.uci.edu/donaldbrenschoolofinformationandcomputersciences/departmentofcomputerscience/#majorstext)
+7. CS specializations information I got manually from [catalogue.uci.edu](http://catalogue.uci.edu/donaldbrenschoolofinformationandcomputersciences/departmentofcomputerscience/#majorstext)
 
     **sample**:
     - [CS specializations](info/specializations.txt)
 
 
-4. A Simple Schedule
 
-    This schedule takes GE requirement, specialization requirement, the quarter offering and course units into account. It adds GE requirement later after major requirement courses are assigned.
-
-    **sample:**
-    ```
-    Taking 16 credits per quarter:
-    year 1 quarter 1: ['I&CSCI6B', 'I&CSCI31', 'MATH2A', 'I&CSCI90']
-    year 1 quarter 2: ['I&CSCI6D', 'COMPSCI125', 'I&CSCI51']
-    year 1 quarter 3: ['I&CSCI32', 'MATH2B', 'GEVII-1', 'GEVb']
-    year 2 quarter 1: ['IN4MATX43', 'I&CSCI33', 'STATS67', 'MATH3A']
-    year 2 quarter 2: ['I&CSCI45C', 'COMPSCI178', 'GEVIII-1', 'GEII-2']
-    year 2 quarter 3: ['I&CSCI46', 'GEIV-2', 'GEIV-3', 'GEII-1']
-    year 3 quarter 1: ['COMPSCI169', 'COMPSCI171', 'COMPSCI161', 'GEII-3']
-    year 3 quarter 2: ['COMPSCI175', 'GEIV-1', 'GEVa', 'GEVI-1']
-    ```
 
 ## Schedule
 
@@ -68,7 +78,7 @@ will also have a working application done by the end of this quarter.
 
 - **Week 4, 5, 6:** (In progress) Modify the algorithm to solve difficulties illustrated and test the quality of the final algorithm.
 
-- **week 7, 8, 9, 10:** Implement the algorithm by using collected data. May make a simple working command-line interface first, and if time permits, develop a web-based application.
+- **week 7, 8, 9, 10:** Find other similar algorithms and compare them with coffman-graham algorithm. 
 
 ### 2017 Spring Quarter
 

@@ -135,6 +135,9 @@ class CoursesGraph:
 	def __setitem__(self, key, value):
 		self.adjList[key] = value
 
+	def mergeGraph(self, graph):
+		self.adjList.update(graph.adjList)
+
 	def loadFromExcel(self, fileName):
 		pass
 
