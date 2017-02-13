@@ -10,8 +10,91 @@ described the Coffman-graham algorithm that I will be working on, and some diffi
 2. refactor code.
 
 ## Current Course Scheduling Algorithm
-### Pesudocode
+### Algorithm Explanations
+#### in main:
+```
+Load specialization info into SpecsTable
+load course infomation into graphs
+For each course in graph:
+    update the course dependent info
+    update course specialization satisfaction info
+Start to do multigraph scheduling
+```
 
+#### in Scheduling algorithm
+
+- L: is the scheduling output, which is initially ```[[]]``` before doing
+scheduling for all the graphs.
+
+- Q: store the courses that are going to be scheduled into L. prereqs of all courses in the queue are already satisfied.
+
+- define number of courses in graph to be n.
+
+- define the number of levels in L to be m. 0<m<n
+
+- difine the maximum width of a level to be w.  0<w<n and w = n/m
+
+```
+INPUT: a course graph
+OUTPUT: L
+
+initialize Q, queue, and add courses without prereqs into it
+
+while Q is not empty: # O(n) times
+    currentCourse = Q.pop()         # O(1)
+    while Q is not empty and current Course is upper division standing only: # O(n)
+        # note this part may results in infinite loop if all
+        # courses in Q is upper division standing only
+        push currentCourse to the end of Q
+        currentCourse = Q.pop()
+
+    discard currentCourse if it does not satisfy any specializations
+
+    if the highest Level in L has currentCourse's dependent(prereq): # O(w)
+        it will create new levels until it find the nearest quarter that
+        this course is offered.
+        Then the course will be assigned to this level
+
+    else:       # the highest level does not has cur's dependents
+        step = the second highest level index
+        if the highest level is full, we have to create a new level     # O(w)
+            and then create more levels until it find the nearest quarter that
+            this course is offered.
+        lastStep = the highest level index # the lowest acceptable level index so far
+
+        while the currentCourse is not assigned to the schedule and step >=0: # O(m) times
+
+            if there are dependents in level L[step],   # O(w)
+                it cannot be assigned to a higher level,
+                 we assign it to the level L[lastStep]
+
+            else if this level is not full,
+                and currentCourse will be offered this quarter,
+                then this is a possible level for this course.  # O(w)
+                we will mark:
+                    lastStep = step
+            step--
+
+        if the course is still not assigned after looking over all levels in schedule:
+            course will be assigned to the lowest acceptable level L[lastStep]
+
+        we are sure that the course is assigned, then we will add those courses
+            that will be satisfied after assigning this course into Q
+
+        add currentCourse units into the total units assigned
+
+    clear empty levels at the end of L
+    return L
+```
+
+- creating new levels until find the nearest quarter that this course is offered is
+O(1) because it will create at most 3 levels for a course
+- any pop or push operation is O(1)
+- the first while loop will loop through O(n) times
+- between first while loop and the third one: O(n+2w) = O(n+w)=O(n)
+- third while loop: O(m) times
+- in third while loop: O(2w) = O(w)
+- total is O(n)\*(O(n)+O(m)\*O(w)) = O(n)\*(O(n)+O(n)) = O(n^2)
 
 
 

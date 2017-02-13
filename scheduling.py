@@ -104,8 +104,8 @@ class CourseScheduling:
 		for condi in course.condition:
 			if condi == 'UPPERDIVISIONST':
 				bools = bools and self.totalUnits > 90.0
-			elif condi == 'LOWERDIVISIONWRITING':
-				bools = bools and sum([s for s in self.specsTable["Writing"]])==0  # all satisfyied
+			# elif condi == 'LOWERDIVISIONWRITING':
+			# 	bools = bools and sum([s for s in self.specsTable["Writing"]])==0  # all satisfyied
 		return bools
 
 	def courseScheduling(self, graph: CoursesGraph):
@@ -119,7 +119,7 @@ class CourseScheduling:
 					Q.append(cur)
 					cur = Q.popleft()
 
-			# check if satisfy specifications
+			# check if satisfy specializations
 			satSpecs = graph[cur].getSpecs()  # {('Lower-division', 1)}
 			remain = False
 			for specName, index in satSpecs:

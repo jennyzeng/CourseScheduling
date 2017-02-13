@@ -4,12 +4,6 @@ from loadData import DataLoading
 
 creditsPerQuarter = 16
 
-
-# def widthFunc(level, course):
-# 	return sum([graph[c].units if graph[c] else geGraph[c].units for c in level]
-# 	           ) + course.units > creditsPerQuarter
-
-
 # data loading
 ## for Computer Science graph
 SpecsCourse, SpecsTable = DataLoading().loadSpec(major="Computer Science",
@@ -43,12 +37,15 @@ for i, L in enumerate(L):
 
 """
 Taking 16 credits per quarter:
-year 1 quarter 1: ['I&CSCI6B', 'I&CSCI31', 'MATH2A', 'I&CSCI90']
-year 1 quarter 2: ['I&CSCI6D', 'COMPSCI125', 'I&CSCI51']
-year 1 quarter 3: ['I&CSCI32', 'MATH2B', 'GEVII-1', 'GEVb']
-year 2 quarter 1: ['IN4MATX43', 'I&CSCI33', 'STATS67', 'MATH3A']
-year 2 quarter 2: ['I&CSCI45C', 'COMPSCI178', 'GEVIII-1', 'GEII-2']
-year 2 quarter 3: ['I&CSCI46', 'GEIV-2', 'GEIV-3', 'GEII-1']
-year 3 quarter 1: ['COMPSCI169', 'COMPSCI171', 'COMPSCI161', 'GEII-3']
-year 3 quarter 2: ['COMPSCI175', 'GEIV-1', 'GEVa', 'GEVI-1']
+year 1 quarter 1: ['I&CSCI6B', 'I&CSCI31', 'I&CSCI90', 'WRITING39A']
+year 1 quarter 2: ['MATH2A', 'I&CSCI6D', 'IN4MATX131', 'I&CSCI32']
+year 1 quarter 3: ['I&CSCI51', 'WRITING39B', 'MATH2B']
+year 2 quarter 1: ['IN4MATX43', 'I&CSCI33', 'WRITING39C', 'MATH3A']
+year 2 quarter 2: ['STATS67', 'I&CSCI45C', 'IN4MATX113', 'COMPSCI122A']
+year 2 quarter 3: ['COMPSCI132', 'I&CSCI139W', 'I&CSCI46', 'GEIV-2']
+year 3 quarter 1: ['COMPSCI151', 'COMPSCI184A', 'COMPSCI169', 'COMPSCI112']
+year 3 quarter 2: ['COMPSCI178', 'COMPSCI125', 'I&CSCI161', 'COMPSCI133']
+year 3 quarter 3: ['COMPSCI154', 'GEVIII-1', 'GEVI-1', 'GEII-1']
+year 4 quarter 1: ['COMPSCI161', 'COMPSCI171', 'GEIV-1', 'GEII-2']
+year 4 quarter 2: ['COMPSCI175', 'GEIV-3', 'GEVII-1']
 """
