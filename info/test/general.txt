@@ -22,10 +22,3 @@ GEVII -1
 GEVIII -1
 }
 ;
-Writing
-all
-{
-WRITING 39A
-WRITING 39B
-WRITING 39C
-}

@@ -9,6 +9,12 @@ described the Coffman-graham algorithm that I will be working on, and some diffi
 1. some courses are also GEs, should not take GEs again.(need so much more infomation, may avoid doing this part to better research algorithms)
 2. refactor code.
 
+## Current Course Scheduling Algorithm
+### Pesudocode
+
+
+
+
 ## Current Results
 1. solve the problem that some courses are upper division student only.
 

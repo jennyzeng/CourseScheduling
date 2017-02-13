@@ -1,4 +1,12 @@
 Computer Science
+Writing
+all
+{
+WRITING 39A
+WRITING 39B
+WRITING 39C
+}
+;
 Lower-division
 all
 {

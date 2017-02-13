@@ -60,24 +60,24 @@ class CourseScheduling:
 		it will put all the courses without prereq to deque and return the deque
 		"""
 		Q = deque()
-		Q2 = deque()
+		# Q2 = deque()
 		for name, course in graph.getCourses():
 			if not course.hasPrereq():
-				if self.courseConditions(course):
-					Q.append(name)
-				else:
-					Q2.append(name)
-		return Q, Q2
+				# if self.courseConditions(course):
+				Q.append(name)
+				# else:
+				# 	Q2.append(name)
+		return Q#, Q2
 
-	def expandQueue(self, Q, Q2, graph, course):
+	def expandQueue(self, Q, graph, course):
 		# add those courses that are satisfied into the Q
 		satisfies = graph.tagSatisfy(course)
 		for sat in satisfies:
 			if graph[sat].prereqIsSatisfied():
-				if self.courseConditions(graph[sat]):
-					Q.append(sat)
-				else:
-					Q2.append(sat)
+				# if self.courseConditions(graph[sat]):
+				Q.append(sat)
+				# else:
+				# 	Q2.append(sat)
 
 	def lastAccpetedLevel(self, course):
 		"""
@@ -110,14 +110,14 @@ class CourseScheduling:
 
 	def courseScheduling(self, graph: CoursesGraph):
 		# initialize my queue
-		Q, Q2 = self.iniQueue(graph)
+		Q = self.iniQueue(graph)
 		# Q2 is the queue for special conditions
 
 		while Q:
 			cur = Q.popleft()
 			while Q and not self.courseConditions(graph[cur]):
 					Q.append(cur)
-					cur = Q.pop()
+					cur = Q.popleft()
 
 			# check if satisfy specifications
 			satSpecs = graph[cur].getSpecs()  # {('Lower-division', 1)}
@@ -163,7 +163,7 @@ class CourseScheduling:
 				step -= 1
 			if not assigned:
 				self.L[lastStep].append(cur)
-			self.expandQueue(Q,Q2, graph, cur)
+			self.expandQueue(Q, graph, cur)
 			self.totalUnits += graph[cur].units
 		self.clearEmptyLevels()
 		return self.L
