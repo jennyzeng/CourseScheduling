@@ -40,7 +40,7 @@ OUTPUT: L
 
 initialize Q, queue, and add courses without prereqs into it
 
-while Q is not empty:                           # O(n) times
+while Q is not empty:                                                           # O(n) times
     currentCourse = Q.pop()         # O(1)
     while Q is not empty and current Course is upper division standing only:    # O(n)
         push currentCourse to the end of Q
