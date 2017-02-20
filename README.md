@@ -21,6 +21,7 @@ For each course in graph:
 Start to do multigraph scheduling
 ```
 
+
 #### in Scheduling algorithm
 
 - L: is the scheduling output, which is initially ```[[]]``` before doing
@@ -35,45 +36,49 @@ scheduling for all the graphs.
 - define the maximum width of a level to be w.  0<w<n and w = n/m
 
 ```
-INPUT: a course graph
+INPUT:
+    - L: current schedule
+    - graph: a course graph
+    - specsTable: store specs that should be satisfied
+    - upperBound: above what levels a upper standing course can be assgined
+
 OUTPUT: L
 
 initialize Q, queue, and add courses without prereqs into it
 
 while Q is not empty:                                                           # O(n) times
     currentCourse = Q.pop()         # O(1)
-    while Q is not empty and current Course is upper division standing only:    # O(n)
-        push currentCourse to the end of Q
-        currentCourse = Q.pop()
-        return L if the it already looped through all of the courses in Q
-            and still cannot find one that can be assigned
 
     discard currentCourse if it does not satisfy any specializations
 
-    if the highest Level in L has currentCourse's dependent(prereq):            # O(w)
-        it will create new levels until it find the nearest quarter that
-        this course is offered.
-        Then the course will be assigned to this level
+    if the highest level has dependents, it has to be assigned to a new level.
+        Then assigned = True
+    else: assigned = False
 
-    else:       # the highest level does not have cur's dependents
+    if not assigned:       # the highest level does not have cur's dependents
         step = the second highest level index
         if the highest level is full, we have to create a new level
             and then create more levels until it find the nearest quarter that
             this course is offered.                                             # O(w)
         lastStep = the highest level index (lowest acceptable one so far)
 
-
-        while the currentCourse is not assigned to the schedule and step >= 0: # O(m) times
+        while not assigned to the schedule and step >= 0: # O(m) times
 
             if there are dependents in level L[step]:           # O(w)
                 it cannot be assigned to a higher level,
                  we assign it to the level L[lastStep]
+                 assigned = True
 
-            else if this level is not full,
-                and currentCourse will be offered this quarter,
-                then this is a possible level for this course.  # O(w)
-                we will mark:
-                    lastStep = step
+            else:
+                if course is upper standing only and step < upperBound:
+                    assign it to the level L[lastStep]
+                    assigned = True
+
+                else if this level is not full,
+                    and currentCourse will be offered this quarter,
+                    then this is a possible level for this course.  # O(w)
+                    we will mark:
+                        lastStep = step
             step--
 
         if the course is still not assigned after looking over all levels in schedule:
@@ -101,54 +106,61 @@ O(1) because it will create at most 3 levels for a course
 
 
 ## Current Results
-1. solve the problem that some courses are upper division student only.
+1. It will make schedules on a upper bound range and pick the most efficient one.
 
-    - method 1: adding another queue: this still cannot solve the problem that some courses will be added to a lower division level. May solve later after refactor the scheduling code. 
-    
-    - method 2: pushing this course back into the end of the queue. This somewhat guarantees that this course will not show up too early until some other courses that are not upper division students only are assigned. However, if there are so many courses like GE in the queue, then it will deplay the process. (Having GEs when scheduling will result in a worse schedule)
+2. solve the problem that some courses are upper standing student only.
+    Set a upper bound advanced. The bound will prevent the algorithm from assigning upper standing only courses into a level < upper bound (specified in function).
 
-2. it can pick more courses randomly to fullfill the 11 upper requirement after loading 11 upper requirement in the specialization txt file. 
+3. it can pick more courses randomly to fullfill the 11 upper requirement after loading 11 upper requirement in the specialization txt file.
 
-3. A Simple Schedule
+4. A Simple Schedule
 
-    This schedule takes GE requirement, specialization requirement, the quarter offering and course units into account.
-     It adds GE requirement later after major requirement courses are assigned. (on average this can get a better result than adding them together)
+    This schedule can handle the following conditions:
+
+    1. GE requirement
+    2. specialization requirement
+    3. the quarter offering and course units
+    4. Multi-graph scheduling (It adds GE requirement later after major requirement courses are assigned. (on average this can get a better result than adding them together)
+    5. Some courses are upper division standing only
 
     **sample:**
     ```
+    CS Student specialized in Intelligent System.
     Taking 16 credits per quarter:
-    year 1 quarter 1: ['I&CSCI90', 'I&CSCI31', 'I&CSCI6B', 'MATH2A']
-    year 1 quarter 2: ['IN4MATX131', 'I&CSCI32', 'I&CSCI6D', 'MATH2B']
-    year 1 quarter 3: ['I&CSCI51', 'I&CSCI33', 'IN4MATX43']
-    year 2 quarter 1: ['MATH3A', 'STATS67', 'COMPSCI151', 'I&CSCI45C']
-    year 2 quarter 2: ['COMPSCI122A', 'IN4MATX113', 'COMPSCI178', 'COMPSCI152']
-    year 2 quarter 3: ['COMPSCI132', 'COMPSCI154', 'I&CSCI46', 'GEIV-3']
-    year 3 quarter 1: ['COMPSCI184A', 'COMPSCI169', 'IN4MATX115', 'COMPSCI171']
-    year 3 quarter 2: ['COMPSCI133', 'COMPSCI161', 'COMPSCI116', 'COMPSCI175']
-    year 3 quarter 3: ['GEVIII-1', 'GEIV-2', 'GEVII-1', 'GEVI-1']
-    year 4 quarter 1: ['GEII-1', 'GEIV-1', 'GEII-2']
+    year 1 quarter 1: ['WRITING39A', 'MATH2A', 'I&CSCI90', 'I&CSCI31']
+    year 1 quarter 2: ['I&CSCI6B', 'WRITING39B', 'MATH2B', 'IN4MATX131']
+    year 1 quarter 3: ['I&CSCI32', 'I&CSCI51', 'I&CSCI6D']
+    year 2 quarter 1: ['WRITING39C', 'STATS67', 'MATH3A', 'I&CSCI33']
+    year 2 quarter 2: ['I&CSCI53+53L', 'COMPSCI178', 'I&CSCI45C']
+    year 2 quarter 3: ['IN4MATX43', 'COMPSCI132', 'COMPSCI177', 'COMPSCI122A']
+    year 3 quarter 1: ['COMPSCI184A', 'COMPSCI169', 'COMPSCI151', 'I&CSCI46']
+    year 3 quarter 2: ['I&CSCI139W', 'COMPSCI125', 'IN4MATX113', 'COMPSCI133']
+    year 3 quarter 3: ['COMPSCI154', 'GEIV-3', 'GEVIII-1', 'GEII-2']
+    year 4 quarter 1: ['IN4MATX121', 'COMPSCI161', 'COMPSCI171', 'GEIV-2']
+    year 4 quarter 2: ['COMPSCI175', 'GEII-1', 'GEVI-1', 'GEVII-1']
+    year 4 quarter 3: ['GEIV-1']
     ```
 
-4. Original coffman-graham algorithm.
+5. Original coffman-graham algorithm.
     - [directedGraphRepresentation](coffman_graham_algorithm/directedGraphRepresentation.py)
     - [coffman-graham algorithm](coffman_graham_algorithm/coffman-grapham.py)
 
-5. Crawler
+6. Crawler
     - [WebSoc and prerequistes Crawler (using beautiful soup and requests libraries)](WebSoc.py)
 
     - Right now it still cannot get those courses without prereqs automatically
 
-6. Courses information I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I integrated my crawlers into one on week 4 in Winter quarter.
+7. Courses information I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I integrated my crawlers into one on week 4 in Winter quarter.
 
     **sample**:
     - [WRITING, I&C SCI, COMPSCI Depts data](info/test/fullcourses.txt)
 
     In the txt file, each line contains info of a course and the line is separated by ";". Line is in the following format:
-    ```[department code];[course num];[title];[prereqs];[units];[quarters]```
+    ```[department code];[course num];[title];[prereqs];[units];[quarters];[isUpperOnly]```
     e.g.
-    ```I&CSCI;6D;DISCRET MATH FOR CS;[{'I&CSCI6B'}];4;{0, 1, 2}```
+    ```I&CSCI;6D;DISCRET MATH FOR CS;[{'I&CSCI6B'}];4;{0, 1, 2};False```
 
-7. CS specializations information I got manually from [catalogue.uci.edu](http://catalogue.uci.edu/donaldbrenschoolofinformationandcomputersciences/departmentofcomputerscience/#majorstext)
+8. CS specializations information I got manually from [catalogue.uci.edu](http://catalogue.uci.edu/donaldbrenschoolofinformationandcomputersciences/departmentofcomputerscience/#majorstext)
 
     **sample**:
     - [CS specializations](info/specializations.txt)
@@ -156,7 +168,7 @@ O(1) because it will create at most 3 levels for a course
 
 
 
-## Schedule
+## Research Project Schedule
 
 ### 2017 Winter Quarter
 During winter quarter, I will implement the algorithm and resolve dificulties described. I

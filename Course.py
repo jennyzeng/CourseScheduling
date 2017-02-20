@@ -1,8 +1,13 @@
 from datetime import time
 
 """
-a course will have the name, teaching time(start time, end time),
-the quarter it will be offered, its units, prerequisite, and the courses that it may partially satisfy their prerequisites
+a course will have info about:
+ - the name,
+ - the quarter it will be offered,
+ - its units, prerequisite,
+ - if it is upperstanding only
+ -  the courses that it may partially satisfy their prerequisites
+
 it is assumed that it will be offered at the same quarter for every year
 
 for weekday: 1-5: represents Mon-Fri
@@ -21,15 +26,7 @@ some courses, such as AP xxx, if they are not in the courses list, we can simply
 when we are scheduling
 
 
-
-Some thoughts:
-1. What about the discussion/lab class? should I ignore the time conflict at the current stage?
-2. I think currently I may only focus on:
- a. the quarter they are offered,
- b. prereq relationship,
- c. units
 """
-weekDayCode = {"M": 0, "Tu": 1, "W": 2, "Th": 3, "F": 4}
 
 
 class Course:
@@ -55,20 +52,11 @@ class Course:
 			quar=self.quarters, prereq=self.prereq, sat=self.satisfy,
 			spec=self.satSpecs,upp=self.isUpperOnly)
 
+	def resetCourse(self):
+		self.prereqBool = [None] * len(self.prereq)
+
 	def addQuarter(self, quarter):
 		self.quarters.update(quarter)
-
-	# def setWeekdaysInWebSoc(self, days):
-	# 	i = 0
-	# 	while i < len(days):
-	# 		code = weekDayCode.get(days[i])
-	# 		if code != None:
-	# 			self.weekdays.append(code)
-	# 			i += 1
-	# 		else:
-	# 			code = weekDayCode.get(days[i:i + 2])
-	# 			self.weekdays.append(code)
-	# 			i += 2
 
 	def addPrereq(self, prereq):
 		self.prereq.append(prereq)
@@ -110,15 +98,12 @@ class Course:
 	def prereqIsSatisfied(self):
 		return all(self.prereqBool)
 
-	# def conflict(self, course):
-	# 	"""time conflict of two courses"""
-	# 	return False
-
 	def isValidQuarter(self, quarter):
 		return quarter % 3 in self.quarters
 
 
 class CoursesGraph:
+
 	def __init__(self, adjList=None):
 		self.adjList = adjList if adjList else dict()
 
@@ -134,6 +119,10 @@ class CoursesGraph:
 
 	def __setitem__(self, key, value):
 		self.adjList[key] = value
+
+	def resetGraph(self):
+		for course in self.adjList.values():
+			course.resetCourse()
 
 	def mergeGraph(self, graph):
 		self.adjList.update(graph.adjList)
@@ -226,39 +215,3 @@ class CoursesGraph:
 		return L
 
 
-if __name__ == "__main__":
-	compsci161 = Course("DES&ANALYS OF ALGO")
-	print(compsci161)
-
-# SampleAdjList = {"COMPSCI 161": Course(quarter=[1, 2, 3],
-#                                        units=4.0,
-#                                        startTime=time(11, 00),
-#                                        endTime=time(11, 50),
-#                                        weekdays=[1, 3, 5],
-#                                        prereq=[{"I&C SCI 23", "CSE 23", "I&C SCI H23", "I&C SCI 46", "CSE 46"},
-#                                                {"I&C SCI 6B"}, {"I&C SCI 6D"},
-#                                                {"MATH 2B", "AP CALCULUS BC"}]),
-#                  "I&C SCI 46": Course(quarter=[1, 2, 3],
-#                                       units=4.0,
-#                                       startTime=time(10, 00),
-#                                       endTime=time(11, 20),
-#                                       weekdays={2, 4},
-#                                       prereq=[{"I&C SCI 45C", "I&C SCI 45J"}],
-#                                       satisfy={"COMPSCI 161"})
-#                  }
-# adjList = {
-# 	"a": Course(units=4.0, quarters={0}, prereq=[]),
-# 	"b": Course(units=4.0, quarters={1}, prereq=[{"a"}]),
-# 	"c": Course(units=2.0, quarters={1, 2}, prereq=[{"b"}]),
-# 	"d": Course(units=1.5, quarters={1, 2}, prereq=[{"a", "c"}, {"k"}, {"e"}]),  # k is not in the adjList
-# 	"e": Course(units=3.5, quarters={1, 2}, prereq=[])
-# }
-# graph = CoursesGraph(adjList)
-# # print(graph)
-# graph.updateSatisfies()
-# print(graph)
-
-"""
-expected output form for course schedule:
-[["a", "e"], ["b","c"],["d"]]
-"""
