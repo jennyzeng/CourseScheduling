@@ -12,7 +12,8 @@ class DataLoading:
 			for line in f:
 				info = line.strip().split(";")
 				graph.addCourse("".join(info[0:2]), Course(name=info[2], prereq=eval(info[3]),
-				                                           units=int(info[4]), quarters=eval(info[5]), condition=eval(info[6])))
+				                                           units=int(info[4]), quarters=eval(info[5]),
+				                                           isUpperOnly=eval(info[6])))
 
 	def loadSpec(self, major, specs, filename):
 		hashTable = {}

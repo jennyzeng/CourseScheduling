@@ -33,7 +33,7 @@ weekDayCode = {"M": 0, "Tu": 1, "W": 2, "Th": 3, "F": 4}
 
 
 class Course:
-	def __init__(self, name, condition=None, units=None, quarters=None, prereq=None, satisfy=None):
+	def __init__(self, name, isUpperOnly=None, units=None, quarters=None, prereq=None, satisfy=None):
 		self.name = name
 		self.quarters = quarters if quarters else {}
 		self.units = units if units else None
@@ -41,7 +41,7 @@ class Course:
 		self.satisfy = satisfy if satisfy else set()
 		self.prereqBool = [None] * len(self.prereq)
 		self.satSpecs = set()
-		self.condition = condition if condition else set()
+		self.isUpperOnly = isUpperOnly
 
 	def __str__(self):
 		return "name: {name}\n" \
@@ -50,10 +50,10 @@ class Course:
 		       "prereq: {prereq}\n" \
 		       "satisfyCourse: {sat}\n" \
 		       "satisfySpec:{spec}\n" \
-		       "conditions: {con}".format(
+		       "upperOnly: {upp}".format(
 			name=self.name, units=self.units,
 			quar=self.quarters, prereq=self.prereq, sat=self.satisfy,
-			spec=self.satSpecs,con=self.condition )
+			spec=self.satSpecs,upp=self.isUpperOnly)
 
 	def addQuarter(self, quarter):
 		self.quarters.update(quarter)

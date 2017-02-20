@@ -32,7 +32,7 @@ class WebSoc:
 			"Room": "",
 			"Submit": "Display Web Results"
 		}
-		self.quarterCode = {0: "2016-92", 1: "2017-03", 2: "2016-14"}
+		self.quarterCode = {0: "2016-92", 1: "2017-03", 2: "2017-14"}
 		self.reqURL = "https://www.reg.uci.edu/cob/prrqcgi?"
 		self.prereqInfo = {'action': 'view_all', 'term': 201703, 'dept': None}
 		self.depts = []
@@ -53,11 +53,6 @@ class WebSoc:
 		                     ).find_all(
 			class_=["course", "title", "prereq"])
 
-	def _DBwriteDeptCouresInfo(self, dept, lines):
-		# db = MySQLdb.connect(host='localhost', user='root', passwd='Jenny186200@', db='CS-h198')
-		# cursor = db.cursor()
-		# cursor.execute("")
-		pass
 	def _writeDeptCouresInfo(self, dept, lines, filename):
 		with open(filename,'a') as f:
 			for i in range(0, len(lines), 3):
@@ -88,7 +83,7 @@ class WebSoc:
 			return None, None
 
 	def _getPrereqs(self, prereq):
-		condition = set()
+		condition = False
 		prereq = re.sub('</*b>|<br>|\\r|\\n|<.*?td.*?>', "", prereq).strip()
 		if "AND" in prereq:
 			L = prereq.split("AND")
@@ -102,14 +97,13 @@ class WebSoc:
 				course = re.sub("\(|\)| (\( min grade.*?\))| (\( min score.*?\))|(coreq)|( )|(recommended)",
 				                "", course).replace("&amp;", "&").replace("coreq", "")
 				# add upper division standing
-				if course in [ 'UPPERDIVISIONST','ENTRYLEVELWRITING','LOWERDIVISIONWRITING']:
-					condition.add(course)
-
-				elif course not in [ 'INGONLY', 'BETTERseeSOCcommentsforrepeatpolicy'] \
-						and '=' not in course and not course.startswith("AP") and \
-						not course.startswith('NO') and not course.startswith(
-					'PLACEMENT'):
-					orSet.add(course)
+				if course =='UPPERDIVISIONST':
+					condition=True
+				else:
+					regexp = re.compile(r"(ONLY)|(^NO)|(^AP)|(BETTER)|(COMPUTERSCI&ENGRMAJ) \
+							|(ENTRYLEVELWRITING)|(LOWERDIVISIONWRITING)|(^PLACEMENT)|(COMPUTERSCI&ENGRMAJ)|(=)|(>)")
+					if not regexp.search(course):
+						orSet.add(course)
 			if orSet: output.append(orSet)
 		return output, condition
 
@@ -147,5 +141,5 @@ class WebSoc:
 
 if __name__ == "__main__":
 	websoc = WebSoc()
-	# websoc.main(["I&C SCI", "COMPSCI","MATH","STATS", "IN4MATX"], "fullcourses.txt")
-	websoc.main(["POL SCI"], "fullcourses.txt")
+	websoc.main(["I&C SCI", "COMPSCI","MATH","STATS", "IN4MATX","WRITING"], "fullcourses.txt")
+	# websoc.main(["WRITING"], "fullcourses.txt")

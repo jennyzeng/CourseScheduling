@@ -11,6 +11,7 @@ SpecsCourse, SpecsTable = DataLoading().loadSpec(major="Computer Science",
                                                  filename="info/specializations.txt")
 graph = CoursesGraph()
 DataLoading().loadCourses(graph, "info/test/fullcourses.txt")
+# DataLoading().loadCourses(graph, "info/test/noprereq.txt")
 graph.updateSatisfies()
 graph.loadSpecs(SpecsCourse)
 
@@ -29,12 +30,14 @@ SpecsTable.update(generalSpecsTable)
 
 
 # scheduling
-L = CourseScheduling([graph,geGraph], SpecsTable).multiGraphScheduling()
+L, SpecsTable = CourseScheduling([graph,geGraph], SpecsTable, 16).multiGraphScheduling()
 
 print("Taking %d credits per quarter: " % (creditsPerQuarter))
 for i, L in enumerate(L):
 	print("year %d quarter %d:" % (i // 3 + 1, i % 3 + 1), L)
 
+print(SpecsTable)
+print(SpecsCourse)
 """
 Taking 16 credits per quarter:
 year 1 quarter 1: ['I&CSCI6B', 'I&CSCI31', 'I&CSCI90', 'WRITING39A']
