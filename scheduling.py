@@ -42,8 +42,15 @@ class CourseScheduling:
 		self.L = [[]]
 		# self._widthFunc = widthFunc
 		self.graphList = graphList
-		self.totalUnits = 0  # total units assigned
+		self.levelUnits = [0]  # total units assigned
 		self.specsTable = SpecsTable
+		self.totalUnits = 0
+
+	def multiGraphScheduling(self):
+		# L = [[]]
+		for graph in self.graphList:
+			self.L = self.courseScheduling(graph)
+		return self.L
 
 	def widthFunc(self, level, courseUnit):
 		theSum = courseUnit
@@ -55,7 +62,7 @@ class CourseScheduling:
 
 		return theSum > 16
 
-	def iniQueue(self, graph: CoursesGraph):
+	def _iniQueue(self, graph: CoursesGraph):
 		"""
 		it will put all the courses without prereq to deque and return the deque
 		"""
@@ -69,7 +76,7 @@ class CourseScheduling:
 				# 	Q2.append(name)
 		return Q#, Q2
 
-	def expandQueue(self, Q, graph, course):
+	def _expandQueue(self, Q, graph, course):
 		# add those courses that are satisfied into the Q
 		satisfies = graph.tagSatisfy(course)
 		for sat in satisfies:
@@ -79,7 +86,7 @@ class CourseScheduling:
 				# else:
 				# 	Q2.append(sat)
 
-	def lastAccpetedLevel(self, course):
+	def _lastAccpetedLevel(self, course):
 		"""
 		after expanding L, last level of L is accepted for course
 		"""
@@ -89,63 +96,56 @@ class CourseScheduling:
 			else:
 				return
 
-	def clearEmptyLevels(self):
+	def _clearEmptyLevels(self):
 		while self.L and not self.L[-1]:
 			self.L.pop()
 
-	def multiGraphScheduling(self):
-		# L = [[]]
-		for graph in self.graphList:
-			self.L = self.courseScheduling(graph)
-		return self.L
 
-	def courseConditions(self, course: Course):
-		bools = True
-		for condi in course.condition:
-			if condi == 'UPPERDIVISIONST':
-				bools = bools and self.totalUnits > 90.0
-			# elif condi == 'LOWERDIVISIONWRITING':
-			# 	bools = bools and sum([s for s in self.specsTable["Writing"]])==0  # all satisfyied
-		return bools
+
+	def _isUpperStd(self, levelIndex):
+		return sum(self.L[:levelIndex])>90.0
+
+	def _checkSpec(self, cur, graph):
+		# check if satisfy specializations
+		satSpecs = graph[cur].getSpecs()  # {('Lower-division', 1)}
+		remain = False
+		for specName, index in satSpecs:
+			if self.specsTable[specName][index] > 0:
+				remain = True
+				self.specsTable[specName][index] -= 1
+		return remain  # this course is not required if remain=False
+
+	def _highestLevelDependents(self, cur, graph):
+		# if the highest level has dependents, it has to be assigned to a new level
+		for v in self.L[-1]:
+			if graph.isPrereq(v, cur):
+				# find highest avail quarter
+				self.L.append([])
+				self._lastAccpetedLevel(graph[cur])
+				self.L[-1].append(cur)
+				return True     # cur is assigned
+		return False
 
 	def courseScheduling(self, graph: CoursesGraph):
 		# initialize my queue
-		Q = self.iniQueue(graph)
+		Q = self._iniQueue(graph)
 		# Q2 is the queue for special conditions
-
 		while Q:
 			cur = Q.popleft()
-			first = cur
-			while Q and not self.courseConditions(graph[cur]):
-					Q.append(cur)
-					cur = Q.popleft()
-					if cur == first: return self.L
 
 			# check if satisfy specializations
-			satSpecs = graph[cur].getSpecs()  # {('Lower-division', 1)}
-			remain = False
-			for specName, index in satSpecs:
-				if self.specsTable[specName][index] > 0:
-					remain = True
-					self.specsTable[specName][index] -= 1
-			if not remain:  # this course is not required
+			if not self._checkSpec(cur, graph):
 				continue
 
 			# if the highest level has dependents, it has to be assigned to a new level
-			for v in self.L[-1]:
-				if graph.isPrereq(v, cur):
-					# find highest avail quarter
-					self.L.append([])
-					self.lastAccpetedLevel(graph[cur])
-					self.L[-1].append(cur)
-					assigned = True
-					break
-			else:  # it means that the highest level does not has cur's dependents
+			assigned = self._highestLevelDependents(cur, graph)
+
+			if not assigned:  # it means that the highest level does not has cur's dependents
 				step = len(self.L) - 2
 				assigned = False
 				if self.widthFunc(self.L[-1], graph[cur].units):  # highest level is full, should add a new level
 					self.L.append([])
-				self.lastAccpetedLevel(graph[cur])
+				self._lastAccpetedLevel(graph[cur])
 				lastStep = len(self.L) - 1  # highest step is an accepted level for cur
 
 			# start to check from the second highest level to the lowest
@@ -165,9 +165,9 @@ class CourseScheduling:
 				step -= 1
 			if not assigned:
 				self.L[lastStep].append(cur)
-			self.expandQueue(Q, graph, cur)
+			self._expandQueue(Q, graph, cur)
 			self.totalUnits += graph[cur].units
-		self.clearEmptyLevels()
+		self._clearEmptyLevels()
 		return self.L
 
 	# if __name__ == "__main__":
