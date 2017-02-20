@@ -6,8 +6,9 @@ described the Coffman-graham algorithm that I will be working on, and some diffi
 [research-initial-plan.pdf](research-initial-plan.pdf)
 
 ## TODOs
-1. some courses are also GEs, should not take GEs again.(need so much more infomation, may avoid doing this part to better research algorithms)
-2. refactor code.
+1. Allow input courses already taken and schedule at the middle.
+2. Evaulate the quality of solution
+3. Compare it with other job scheduling algorithms
 
 ## Current Course Scheduling Algorithm
 ### Algorithm Explanations
@@ -44,7 +45,7 @@ INPUT:
 
 OUTPUT: L
 
-initialize Q, queue, and add courses without prereqs into it
+initialize Q, maxheap structure, and add courses without prereqs into it
 
 while Q is not empty:                                                           # O(n) times
     currentCourse = Q.pop()         # O(1)
@@ -85,9 +86,9 @@ while Q is not empty:                                                           
             course will be assigned to the lowest acceptable level L[lastStep]
 
         we are sure that the course is assigned, then we will add those courses
-            that will be satisfied after assigning this course into Q           # O(n)
+            that will be satisfied after assigning this course into Q           # O(nlogn)
 
-        add currentCourse units into the total units assigned
+        add currentCourse units into the total units assigned       # O(1)
 
     clear empty levels at the end of L
     return L
@@ -100,70 +101,76 @@ O(1) because it will create at most 3 levels for a course
 - between first while loop and the third one: O(n+2w) = O(n+w)=O(n)
 - third while loop: O(m) times
 - in third while loop: O(2w) = O(w)
-- lastly, expanding Q is O(n)
-- total is O(n)\*(O(n)+O(m)\*O(w) + O(n)) = O(n)\*O(3n) = O(n^2)
+- lastly, push at most n elements into a max heap is O(nlogn)
+- total is O(n)\*(O(n)+O(m)\*O(w) + O(nlogn)) = O(n)\*O(nlogn) = O(n^2logn)
 
 
 
 ## Current Results
-1. It will make schedules on a upper bound range and pick the most efficient one.
+1. Max heap with a heuristic estimation for course values for better performance, but increase the time complexity
 
-2. solve the problem that some courses are upper standing student only.
+2. It will make schedules on a upper bound range and pick the most efficient one.
+
+3. solve the problem that some courses are upper standing student only.
     Set a upper bound advanced. The bound will prevent the algorithm from assigning upper standing only courses into a level < upper bound (specified in function).
 
-3. it can pick more courses randomly to fullfill the 11 upper requirement after loading 11 upper requirement in the specialization txt file.
+4. it can pick more courses randomly to fullfill the 11 upper requirement after loading 11 upper requirement in the specialization txt file.
 
-4. A Simple Schedule
+5. A Simple Schedule
 
     This schedule can handle the following conditions:
 
     1. GE requirement
     2. specialization requirement
     3. the quarter offering and course units
-    4. Multi-graph scheduling (It adds GE requirement later after major requirement courses are assigned. (on average this can get a better result than adding them together)
-    5. Some courses are upper division standing only
+    4. Some courses are upper division standing only
 
     **sample:**
     ```
     CS Student specialized in Intelligent System.
-    Taking 16 credits per quarter:
-    year 1 quarter 1: ['WRITING39A', 'MATH2A', 'I&CSCI90', 'I&CSCI31']
-    year 1 quarter 2: ['I&CSCI6B', 'WRITING39B', 'MATH2B', 'IN4MATX131']
-    year 1 quarter 3: ['I&CSCI32', 'I&CSCI51', 'I&CSCI6D']
-    year 2 quarter 1: ['WRITING39C', 'STATS67', 'MATH3A', 'I&CSCI33']
-    year 2 quarter 2: ['I&CSCI53+53L', 'COMPSCI178', 'I&CSCI45C']
-    year 2 quarter 3: ['IN4MATX43', 'COMPSCI132', 'COMPSCI177', 'COMPSCI122A']
-    year 3 quarter 1: ['COMPSCI184A', 'COMPSCI169', 'COMPSCI151', 'I&CSCI46']
-    year 3 quarter 2: ['I&CSCI139W', 'COMPSCI125', 'IN4MATX113', 'COMPSCI133']
-    year 3 quarter 3: ['COMPSCI154', 'GEIV-3', 'GEVIII-1', 'GEII-2']
-    year 4 quarter 1: ['IN4MATX121', 'COMPSCI161', 'COMPSCI171', 'GEIV-2']
-    year 4 quarter 2: ['COMPSCI175', 'GEII-1', 'GEVI-1', 'GEVII-1']
-    year 4 quarter 3: ['GEIV-1']
+    Take 17 credits per quarter:
+    year 1 quarter 1: ['I&CSCI6B', 'I&CSCI31', 'MATH2A', 'GEII-1', 'I&CSCI90']
+    year 1 quarter 2: ['I&CSCI6D', 'I&CSCI51', 'MATH2B']
+    year 1 quarter 3: ['MATH3A', 'STATS67', 'I&CSCI32', 'GEII-2']
+    year 2 quarter 1: ['COMPSCI132', 'IN4MATX131', 'I&CSCI33', 'IN4MATX43']
+    year 2 quarter 2: ['COMPSCI178', 'I&CSCI45C', 'COMPSCI122A', 'COMPSCI133']
+    year 2 quarter 3: ['I&CSCI46', 'COMPSCI177', 'I&CSCI53+53L']
+    year 3 quarter 1: ['COMPSCI161', 'COMPSCI143A', 'COMPSCI171', 'COMPSCI112']
+    year 3 quarter 2: ['COMPSCI116', 'COMPSCI162', 'COMPSCI175', 'COMPSCI167']
+    year 3 quarter 3: ['COMPSCI163', 'GEIV-1', 'GEIV-2', 'GEIV-3']
+    year 4 quarter 1: ['COMPSCI151', 'IN4MATX121', 'COMPSCI169', 'GEVI-1']
+    year 4 quarter 2: ['COMPSCI152', 'GEVII-1', 'GEVIII-1']
+    best upper bound: year 2 quarter 3
     ```
 
-5. Original coffman-graham algorithm.
+6. Original coffman-graham algorithm.
     - [directedGraphRepresentation](coffman_graham_algorithm/directedGraphRepresentation.py)
     - [coffman-graham algorithm](coffman_graham_algorithm/coffman-grapham.py)
 
-6. Crawler
+7. Crawler
     - [WebSoc and prerequistes Crawler (using beautiful soup and requests libraries)](WebSoc.py)
 
     - Right now it still cannot get those courses without prereqs automatically
+    - For courses such as I&CSCI 51, have to manually modify it to be I&CSCI 51+51L, and change the units to be 6.
 
-7. Courses information I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I integrated my crawlers into one on week 4 in Winter quarter.
+8. Courses information I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I integrated my crawlers into one on week 4 in Winter quarter.
 
     **sample**:
-    - [WRITING, I&C SCI, COMPSCI Depts data](info/test/fullcourses.txt)
+    - [Courses info in some departments](info/test/fullcourses.txt)
 
     In the txt file, each line contains info of a course and the line is separated by ";". Line is in the following format:
     ```[department code];[course num];[title];[prereqs];[units];[quarters];[isUpperOnly]```
     e.g.
     ```I&CSCI;6D;DISCRET MATH FOR CS;[{'I&CSCI6B'}];4;{0, 1, 2};False```
 
-8. CS specializations information I got manually from [catalogue.uci.edu](http://catalogue.uci.edu/donaldbrenschoolofinformationandcomputersciences/departmentofcomputerscience/#majorstext)
+
+    NOTE: Courses information here is just used for testing and is not accurate because the quarters a course will be offered may vary each year.
+
+
+9. CS specializations information I got manually from [catalogue.uci.edu](http://catalogue.uci.edu/donaldbrenschoolofinformationandcomputersciences/departmentofcomputerscience/#majorstext)
 
     **sample**:
-    - [CS specializations](info/specializations.txt)
+    - [CS specializations](info/test/specializations.txt)
 
 
 

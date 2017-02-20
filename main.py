@@ -2,37 +2,35 @@ from Course import Course, CoursesGraph
 from scheduling import *
 from loadData import DataLoading
 
-creditsPerQuarter = 16
+creditsPerQuarter = 17
 
-# data loading
-## for Computer Science graph
-SpecsCourse, SpecsTable = DataLoading().loadSpec(major="Computer Science",
-                                                 specs=["Lower-division", "Upper-division","Writing","Intelligent Systems"],
-                                                 filename="info/test/specializations.txt")
-graph = CoursesGraph()
-DataLoading().loadCourses(graph, "info/test/fullcourses.txt")
-# DataLoading().loadCourses(graph, "info/test/noprereq.txt")
-graph.updateSatisfies()
-graph.loadSpecs(SpecsCourse)
 
-## ge graph
-geGraph = CoursesGraph()
-DataLoading().loadCourses(geGraph, "info/test/ge.txt")
-generalCourse, generalSpecsTable = DataLoading().loadSpec(major="General",
-                                                          specs=["GEII", "GEIV", "GEV", "GEVI"],
-                                                          filename="info/test/general.txt")
+def main():
+	# data loading
+	## for Computer Science graph
+	SpecsCourse, SpecsTable = DataLoading().loadSpec(
+		major="Computer Science",
+		specs=["GEI", "GEII", "GEIV", "GEV", "GEVI",
+		       "Lower-division", "Upper-division",
+		        "Intelligent Systems", "Algorithms"],
+		filename="info/test/specializations.txt")
+	graph = CoursesGraph()
+	DataLoading().loadCourses(graph, "info/test/fullcourses.txt")
+	graph.updateSatisfies()
+	graph.loadSpecs(SpecsCourse)
 
-geGraph.loadSpecs(generalCourse)
-SpecsTable.update(generalSpecsTable)
+	# scheduling
+	L, bestBound = CourseScheduling(graph, SpecsTable, creditsPerQuarter).findBestSchedule(5)
 
-# scheduling
-L, bestBound = CourseScheduling([graph,geGraph], SpecsTable, creditsPerQuarter).findBestSchedule(5)
+	print("Taking %d credits per quarter: " % (creditsPerQuarter))
+	for i, level in enumerate(L):
+		print("year %d quarter %d:" % (i // 3 + 1, i % 3 + 1), level)
 
-print("Taking %d credits per quarter: " % (creditsPerQuarter))
-for i, level in enumerate(L):
-	print("year %d quarter %d:" % (i // 3 + 1, i % 3 + 1), level)
+	print("best upper bound: year %d quarter %d"%(bestBound // 3 + 1, bestBound % 3 + 1))
 
-print(bestBound)
+
+if __name__ == '__main__':
+	main()
 """
 Taking 16 credits per quarter:
 year 1 quarter 1: ['WRITING39A', 'MATH2A', 'I&CSCI90', 'I&CSCI31']

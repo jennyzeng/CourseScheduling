@@ -51,6 +51,10 @@ class Course:
 			name=self.name, units=self.units,
 			quar=self.quarters, prereq=self.prereq, sat=self.satisfy,
 			spec=self.satSpecs,upp=self.isUpperOnly)
+	@property
+	def courseValue(self):
+		return -(len(self.satSpecs) + len(self.satisfy))
+
 
 	def resetCourse(self):
 		self.prereqBool = [None] * len(self.prereq)
@@ -69,6 +73,8 @@ class Course:
 
 	def getSpecs(self):
 		return self.satSpecs
+
+
 
 	def getPrereq(self):
 		return self.prereq

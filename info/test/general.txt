@@ -4,6 +4,8 @@ all
 {
 GEII -1
 GEII -2
+I&CSCI 31
+I&CSCI 51
 }
 ;
 GEIV

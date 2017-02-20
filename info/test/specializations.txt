@@ -1,10 +1,45 @@
 Computer Science
-Writing
+GEI
 all
 {
-WRITING 39A
 WRITING 39B
 WRITING 39C
+}
+;
+GEII
+all
+{
+GEII -1
+GEII -2
+I&CSCI 31
+I&CSCI 51
+}
+;
+GEIV
+all
+{
+GEIV -1
+GEIV -2
+GEIV -3
+}
+;
+GEV
+1
+{
+I&CSCI 32
+STATS 67
+}
+1
+{
+I&CSCI 6B
+}
+;
+GEVI
+all
+{
+GEVI -1
+GEVII -1
+GEVIII -1
 }
 ;
 Lower-division
