@@ -11,7 +11,6 @@ class CourseScheduling:
 	def __init__(self, graph, SpecsTable, unitPerQ):
 		self.graph = graph
 		self.specsTable = SpecsTable
-		self.totalUnits = 0
 		self.unitPerQ = unitPerQ
 		self.upperLevel = ceil(self.upperUnits / self.unitPerQ) - 1  # -1 for zero indexing
 
@@ -21,14 +20,13 @@ class CourseScheduling:
 			total += self.graph[c].units
 		return total > self.unitPerQ
 
-	def findBestSchedule(self, boundRange):
+	def findBestSchedule(self, boundRange, startQ):
 		L = None
 		bestBound = None
 		for bound in range(self.upperLevel, self.upperLevel + boundRange):
 			self._resetGraph()
-			self.totalUnits = 0
 			specsTable = copy.deepcopy(self.specsTable)
-			curSchedule = self.courseScheduling([[]], specsTable, bound)
+			curSchedule = self.courseScheduling([[]], specsTable, bound, startQ)
 
 			if self._isValidSchedule(curSchedule):
 				if not L or len(L) > len(curSchedule):
@@ -37,9 +35,9 @@ class CourseScheduling:
 		if not L: raise Exception("cannot get a valid schedule")
 		return L, bestBound
 
-	def courseScheduling(self, L, specsTable, upperBound):
-		# initialize queue
-		Q = self._iniQueue()
+	def courseScheduling(self, L, specsTable, upperBound, startQ):
+		# initialize heap
+		Q = self._iniHeap(specsTable)
 		while Q:
 			cur = heapq.heappop(Q)[1]
 			# check if satisfy specializations
@@ -74,15 +72,14 @@ class CourseScheduling:
 						assigned = True
 						break
 
-					elif not self.widthFunc(L[step], self.graph[cur].units) and self.graph[cur].isValidQuarter(step):
+					elif not self.widthFunc(L[step], self.graph[cur].units) and self.graph[cur].isValidQuarter(step+startQ):
 						# if step is not full and cur will be offered this quarter, this is a possible level
 						lastStep = step
 				step -= 1
 
 			if not assigned:
 				L[lastStep].append(cur)
-			self._expandQueue(Q, cur)
-			self.totalUnits += self.graph[cur].units
+			self._expandQueue(Q, cur, specsTable)
 
 		self._clearEmptyLevels(L)
 		return L
@@ -102,24 +99,25 @@ class CourseScheduling:
 			total += levelTotal
 		return True
 
-	def _iniQueue(self):
+	def _iniHeap(self, specsTable):
 		"""
 		it will put all the courses without prereq to deque and return the deque
 		"""
 		Q = []
 		for name, course in self.graph.getCourses():
-			if not course.hasPrereq() and course.courseValue:
-				heapq.heappush(Q, (course.courseValue, name))
+			courseValue = self.graph.courseValue(course, specsTable)
+			if not course.hasPrereq() and courseValue:
+				heapq.heappush(Q,(courseValue , name))
 			# Q.append(name)
 
 		return Q
 
-	def _expandQueue(self, Q, course):
+	def _expandQueue(self, Q, course, specsTable):
 		# add those courses that are satisfied into the Q
 		satisfies = self.graph.tagSatisfy(course)
 		for sat in satisfies:
 			if self.graph[sat].prereqIsSatisfied() and self.graph[sat].courseValue != 0:
-				heapq.heappush(Q, (self.graph[sat].courseValue, sat))
+				heapq.heappush(Q, (self.graph.courseValue(self.graph[sat], specsTable), sat))
 			# Q.append(sat)
 
 	def _lastAccpetedLevel(self, course, L, bound):

@@ -54,6 +54,23 @@ class DataLoading:
 
 		return hashTable, hashTable2
 
+	def loadTaken(self, graph, specsTable, filename):
+		with open(filename) as f:
+			startQ = int(f.readline())
+			totalUnits = int(f.readline())
+			for cname in f.readlines():
+				cname = cname.replace(" ", "").strip()
+				course = graph[cname]
+				if course:
+					for specName, index in course.getSpecs():
+						if specsTable[specName][index] > 0:
+							specsTable[specName][index] -= 1
+					graph.delCourse(cname)
+		if totalUnits >= 90:
+			graph.delUpper()
+		return startQ
+
+
 
 if __name__ == "__main__":
 	# graph = CoursesGraph()

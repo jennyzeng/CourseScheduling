@@ -55,6 +55,13 @@ class Course:
 	def courseValue(self):
 		return -(len(self.satSpecs) + len(self.satisfy))
 
+	def delPrereq(self, cname):
+		for i in range(len(self.prereq)):
+			if cname in self.prereq[i]:
+				del self.prereq[i]
+				del self.prereqBool[i]
+				return True
+		return False
 
 	def resetCourse(self):
 		self.prereqBool = [None] * len(self.prereq)
@@ -73,8 +80,6 @@ class Course:
 
 	def getSpecs(self):
 		return self.satSpecs
-
-
 
 	def getPrereq(self):
 		return self.prereq
@@ -126,15 +131,29 @@ class CoursesGraph:
 	def __setitem__(self, key, value):
 		self.adjList[key] = value
 
+	def values(self):
+		return self.adjList.values()
+
+	def delUpper(self):
+		for cname in self.adjList:
+			self.adjList[cname].isUpperOnly = False
+
+	def courseValue(self, course, specsTable):
+		total = len(course.satSpecs)
+		for c in course.satisfy:
+			if self[c]:
+				for spec, num in self[c].satSpecs:
+					total += 1 if specsTable[spec][num] else 0
+		return -total
+
+
+
 	def resetGraph(self):
 		for course in self.adjList.values():
 			course.resetCourse()
 
 	def mergeGraph(self, graph):
 		self.adjList.update(graph.adjList)
-
-	def loadFromExcel(self, fileName):
-		pass
 
 	def addCourse(self, name, course):
 		"""
@@ -145,8 +164,11 @@ class CoursesGraph:
 			return True
 		return False
 
-	def delCourse(self, name):
-		return self.adjList.pop(name)
+	def delCourse(self, cname):
+		for sat in self[cname].satisfy:
+			if self[sat]:
+				self[sat].delPrereq(cname)
+		self.adjList.pop(cname)
 
 	def addCourses(self, courses):
 		"""

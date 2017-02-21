@@ -15,6 +15,13 @@ I&CSCI 31
 I&CSCI 51
 }
 ;
+GEIII
+all
+{
+GEIII -1
+GEIII -2
+GEIII -3
+}
 GEIV
 all
 {
@@ -28,10 +35,12 @@ GEV
 {
 I&CSCI 32
 STATS 67
+GEV -Va1
 }
 1
 {
 I&CSCI 6B
+GEV -Vb1
 }
 ;
 GEVI

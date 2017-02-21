@@ -3,27 +3,29 @@ from scheduling import *
 from loadData import DataLoading
 
 creditsPerQuarter = 17
-
+startQ = 2
 
 def main():
 	# data loading
 	## for Computer Science graph
 	SpecsCourse, SpecsTable = DataLoading().loadSpec(
 		major="Computer Science",
-		specs=["GEI", "GEII", "GEIV", "GEV", "GEVI",
-		       "Lower-division", "Upper-division",
-		        "Intelligent Systems", "Algorithms"],
+		specs=[#"GEI", "GEII","GEIII", "GEIV", "GEV", "GEVI",
+		       #"Lower-division", "Upper-division",
+				"Algorithms",
+		        "Intelligent Systems"],
 		filename="info/test/specializations.txt")
 	graph = CoursesGraph()
 	DataLoading().loadCourses(graph, "info/test/fullcourses.txt")
 	graph.updateSatisfies()
 	graph.loadSpecs(SpecsCourse)
-
+	DataLoading().loadTaken(graph, SpecsTable,"info/test/taken.txt")
 	# scheduling
-	L, bestBound = CourseScheduling(graph, SpecsTable, creditsPerQuarter).findBestSchedule(5)
+	L, bestBound = CourseScheduling(graph, SpecsTable, creditsPerQuarter).findBestSchedule(5, 2)
 
 	print("Taking %d credits per quarter: " % (creditsPerQuarter))
 	for i, level in enumerate(L):
+		i = i+startQ
 		print("year %d quarter %d:" % (i // 3 + 1, i % 3 + 1), level)
 
 	print("best upper bound: year %d quarter %d"%(bestBound // 3 + 1, bestBound % 3 + 1))
