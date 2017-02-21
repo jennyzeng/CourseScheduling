@@ -10,9 +10,24 @@ described the Coffman-graham algorithm that I will be working on, and some diffi
 2. Evaulate the quality of solution
 3. Compare it with other job scheduling algorithms
 
+## How to use this algorithm right now
+
+1. download the whole repo
+3. Install Python3
+4. create a txt file in the directory, and input your info in the following format:
+    1. first line: next quarter code. 0: Fall, 1: Winter, 2: Spring
+    2. second line: credits applied
+    3. for every line after the first two line, open UCI student access, input courses that you have already taken, and can satisfy your requirement.
+    if it is a GE course and does not satisfy any major requirement, put GE[category] -1,GE[category] -2,GE[category] -3 in it. No repetitions, and the number followed by the GE name is in range [1,3].
+    sample: [taken.txt](info/test/taken.txt)
+    4. In [main.py](main.py), edit the directory for taken.txt. If you don't want to use taken, set useTaken=False
+    5. run main.py and you will get a schedule.
+
+NOTE: right now it only has data for CS major with specific specializations
+
+
 ## Current Course Scheduling Algorithm
-### Algorithm Explanations
-#### in main:
+### in main:
 ```
 Load specialization info into SpecsTable
 load course infomation into graphs
@@ -23,7 +38,7 @@ Start to do multigraph scheduling
 ```
 
 
-#### in Scheduling algorithm
+### in Scheduling algorithm
 
 - L: is the scheduling output, which is initially ```[[]]``` before doing
 scheduling for all the graphs.
@@ -127,22 +142,34 @@ O(1) because it will create at most 3 levels for a course
 
     **sample:**
     ```
-    CS Student specialized in Intelligent System.
-    Take 17 credits per quarter:
+    CS Student specialized in Intelligent Systems and Algorithms. No taken.
+    Taking 17 credits per quarter:
     year 1 quarter 1: ['I&CSCI6B', 'I&CSCI31', 'MATH2A', 'GEII-1', 'I&CSCI90']
-    year 1 quarter 2: ['I&CSCI6D', 'I&CSCI51', 'MATH2B']
-    year 1 quarter 3: ['MATH3A', 'STATS67', 'I&CSCI32', 'GEII-2']
-    year 2 quarter 1: ['COMPSCI132', 'IN4MATX131', 'I&CSCI33', 'IN4MATX43']
-    year 2 quarter 2: ['COMPSCI178', 'I&CSCI45C', 'COMPSCI122A', 'COMPSCI133']
-    year 2 quarter 3: ['I&CSCI46', 'COMPSCI177', 'I&CSCI53+53L']
-    year 3 quarter 1: ['COMPSCI161', 'COMPSCI143A', 'COMPSCI171', 'COMPSCI112']
-    year 3 quarter 2: ['COMPSCI116', 'COMPSCI162', 'COMPSCI175', 'COMPSCI167']
-    year 3 quarter 3: ['COMPSCI163', 'GEIV-1', 'GEIV-2', 'GEIV-3']
-    year 4 quarter 1: ['COMPSCI151', 'IN4MATX121', 'COMPSCI169', 'GEVI-1']
-    year 4 quarter 2: ['COMPSCI152', 'GEVII-1', 'GEVIII-1']
+    year 1 quarter 2: ['I&CSCI51', 'I&CSCI32', 'I&CSCI6D']
+    year 1 quarter 3: ['I&CSCI33', 'IN4MATX43', 'MATH2B', 'GEII-2']
+    year 2 quarter 1: ['I&CSCI45C', 'COMPSCI122A', 'COMPSCI151', 'MATH3A']
+    year 2 quarter 2: ['I&CSCI46', 'STATS67', 'I&CSCI53+53L']
+    year 2 quarter 3: ['COMPSCI143A', 'COMPSCI177', 'GEIII-1', 'GEIII-2']
+    year 3 quarter 1: ['COMPSCI141', 'COMPSCI171', 'COMPSCI169', 'COMPSCI161']
+    year 3 quarter 2: ['COMPSCI125', 'COMPSCI162', 'COMPSCI178', 'COMPSCI167']
+    year 3 quarter 3: ['COMPSCI175', 'COMPSCI165', 'COMPSCI163', 'GEIII-3']
+    year 4 quarter 1: ['GEIV-1', 'GEIV-2', 'GEIV-3', 'GEVI-1']
+    year 4 quarter 2: ['GEVII-1', 'GEVIII-1']
     best upper bound: year 2 quarter 3
     ```
 
+
+    ```
+    CS Student specialized in Intelligent Systems and Algorithms. Use taken.
+    start quarter:  2
+    Taking 17 credits per quarter:
+    year 1 quarter 3: ['COMPSCI165', 'COMPSCI163', 'COMPSCI175', 'COMPSCI177']
+    year 2 quarter 1: ['COMPSCI169', 'COMPSCI143A', 'GEII-2', 'GEIV-2']
+    year 2 quarter 2: ['COMPSCI167', 'I&CSCI53+53L', 'GEIV-3']
+    year 2 quarter 3: ['GEVII-1', 'I&CSCI139W']
+    best upper bound: year 2 quarter 3
+
+    ```
 6. Original coffman-graham algorithm.
     - [directedGraphRepresentation](coffman_graham_algorithm/directedGraphRepresentation.py)
     - [coffman-graham algorithm](coffman_graham_algorithm/coffman-grapham.py)

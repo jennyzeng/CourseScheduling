@@ -2,37 +2,54 @@ from Course import Course, CoursesGraph
 from scheduling import *
 from loadData import DataLoading
 
-creditsPerQuarter = 17
-startQ = 2
 
-def main():
-	# data loading
-	## for Computer Science graph
-	SpecsCourse, SpecsTable = DataLoading().loadSpec(
-		major="Computer Science",
-		specs=[#"GEI", "GEII","GEIII", "GEIV", "GEV", "GEVI",
-		       #"Lower-division", "Upper-division",
-				"Algorithms",
-		        "Intelligent Systems"],
-		filename="info/test/specializations.txt")
+def loadData(major, specs, specsFilename, courseFilename, useTaken, takenFilename):
+	specsCourse, specsTable = DataLoading().loadSpec(
+									major=major, specs=specs, filename=specsFilename)
 	graph = CoursesGraph()
-	DataLoading().loadCourses(graph, "info/test/fullcourses.txt")
+	DataLoading().loadCourses(graph, courseFilename)
 	graph.updateSatisfies()
-	graph.loadSpecs(SpecsCourse)
-	DataLoading().loadTaken(graph, SpecsTable,"info/test/taken.txt")
-	# scheduling
-	L, bestBound = CourseScheduling(graph, SpecsTable, creditsPerQuarter).findBestSchedule(5, 2)
+	graph.loadSpecs(specsCourse)
+	defaultUnits = 0
+	if useTaken:
+		defaultUnits = DataLoading().loadTaken(graph, specsTable, takenFilename)
 
+	return graph, specsTable, defaultUnits
+
+
+def printResult(L, bestBound, startQ, creditsPerQuarter):
+	print("start quarter: ", startQ)
 	print("Taking %d credits per quarter: " % (creditsPerQuarter))
 	for i, level in enumerate(L):
-		i = i+startQ
+		i = i + startQ
 		print("year %d quarter %d:" % (i // 3 + 1, i % 3 + 1), level)
 
-	print("best upper bound: year %d quarter %d"%(bestBound // 3 + 1, bestBound % 3 + 1))
+	print("best upper bound: year %d quarter %d" % (bestBound // 3 + 1, bestBound % 3 + 1))
 
 
 if __name__ == '__main__':
-	main()
+	creditsPerQuarter = 17
+	startQ = 2
+	# data loading
+	## for Computer Science graph
+	graph, specsTable, defaultUnits = loadData(
+		major="Computer Science",
+		specs=["GEI", "GEII", "GEIII", "GEIV", "GEV", "GEVI",
+		       "Lower-division",
+		       "Upper-division",
+		       "Algorithms",
+		       "Intelligent Systems"],
+		specsFilename="info/test/specializations.txt",
+		courseFilename="info/test/fullcourses.txt",
+		useTaken=True,
+		takenFilename="info/test/taken.txt"
+	)
+	# scheduling
+	L, bestBound = CourseScheduling(graph, specsTable, creditsPerQuarter, startQ, defaultUnits).findBestSchedule(5)
+
+	printResult(L, bestBound, startQ, creditsPerQuarter)
+
+
 """
 Taking 16 credits per quarter:
 year 1 quarter 1: ['WRITING39A', 'MATH2A', 'I&CSCI90', 'I&CSCI31']

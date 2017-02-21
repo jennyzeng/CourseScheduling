@@ -139,12 +139,17 @@ class CoursesGraph:
 			self.adjList[cname].isUpperOnly = False
 
 	def courseValue(self, course, specsTable):
-		total = len(course.satSpecs)
+		total = 0
+		for spec, num in course.satSpecs:
+			if specsTable[spec][num]!= 0:
+				total -= 1
+
 		for c in course.satisfy:
 			if self[c]:
 				for spec, num in self[c].satSpecs:
-					total += 1 if specsTable[spec][num] else 0
-		return -total
+					total -= 0.1 if specsTable[spec][num] > 0 else 0
+					break
+		return total
 
 
 

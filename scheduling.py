@@ -1,5 +1,3 @@
-from Course import Course, CoursesGraph
-from collections import deque
 from math import ceil
 import copy
 import heapq
@@ -8,11 +6,13 @@ import heapq
 class CourseScheduling:
 	upperUnits = 90
 
-	def __init__(self, graph, SpecsTable, unitPerQ):
+	def __init__(self, graph, SpecsTable, unitPerQ,startQ, defaultUnits):
 		self.graph = graph
 		self.specsTable = SpecsTable
 		self.unitPerQ = unitPerQ
-		self.upperLevel = ceil(self.upperUnits / self.unitPerQ) - 1  # -1 for zero indexing
+		self.upperLevel = ceil((self.upperUnits-defaultUnits) / self.unitPerQ) - 1  # -1 for zero indexing
+		if self.upperLevel<0: self.upperLevel=0
+		self.startQ = startQ
 
 	def widthFunc(self, level, courseUnit):
 		total = courseUnit
@@ -20,13 +20,13 @@ class CourseScheduling:
 			total += self.graph[c].units
 		return total > self.unitPerQ
 
-	def findBestSchedule(self, boundRange, startQ):
+	def findBestSchedule(self, boundRange):
 		L = None
 		bestBound = None
 		for bound in range(self.upperLevel, self.upperLevel + boundRange):
 			self._resetGraph()
 			specsTable = copy.deepcopy(self.specsTable)
-			curSchedule = self.courseScheduling([[]], specsTable, bound, startQ)
+			curSchedule = self.courseScheduling([[]], specsTable, bound)
 
 			if self._isValidSchedule(curSchedule):
 				if not L or len(L) > len(curSchedule):
@@ -35,7 +35,7 @@ class CourseScheduling:
 		if not L: raise Exception("cannot get a valid schedule")
 		return L, bestBound
 
-	def courseScheduling(self, L, specsTable, upperBound, startQ):
+	def courseScheduling(self, L, specsTable, upperBound):
 		# initialize heap
 		Q = self._iniHeap(specsTable)
 		while Q:
@@ -72,7 +72,8 @@ class CourseScheduling:
 						assigned = True
 						break
 
-					elif not self.widthFunc(L[step], self.graph[cur].units) and self.graph[cur].isValidQuarter(step+startQ):
+					elif not self.widthFunc(L[step], self.graph[cur].units) \
+							and self.graph[cur].isValidQuarter(step+self.startQ):
 						# if step is not full and cur will be offered this quarter, this is a possible level
 						lastStep = step
 				step -= 1
@@ -107,7 +108,7 @@ class CourseScheduling:
 		for name, course in self.graph.getCourses():
 			courseValue = self.graph.courseValue(course, specsTable)
 			if not course.hasPrereq() and courseValue:
-				heapq.heappush(Q,(courseValue , name))
+				heapq.heappush(Q,(courseValue, name))
 			# Q.append(name)
 
 		return Q
@@ -116,8 +117,9 @@ class CourseScheduling:
 		# add those courses that are satisfied into the Q
 		satisfies = self.graph.tagSatisfy(course)
 		for sat in satisfies:
-			if self.graph[sat].prereqIsSatisfied() and self.graph[sat].courseValue != 0:
-				heapq.heappush(Q, (self.graph.courseValue(self.graph[sat], specsTable), sat))
+			courseValue = self.graph.courseValue(self.graph[sat], specsTable)
+			if self.graph[sat].prereqIsSatisfied() and courseValue:
+				heapq.heappush(Q, (courseValue, sat))
 			# Q.append(sat)
 
 	def _lastAccpetedLevel(self, course, L, bound):
@@ -129,7 +131,7 @@ class CourseScheduling:
 			while len(L) - 1 < bound:
 				L.append([])
 
-		while not course.isValidQuarter(len(L) - 1):
+		while not course.isValidQuarter(len(L)+self.startQ - 1):
 			L.append([])
 		return L
 
