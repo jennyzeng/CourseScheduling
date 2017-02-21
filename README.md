@@ -20,10 +20,10 @@ described the Coffman-graham algorithm that I will be working on, and some diffi
     3. for every line after the first two line, open UCI student access, input courses that you have already taken, and can satisfy your requirement.
     if it is a GE course and does not satisfy any major requirement, put GE[category] -1,GE[category] -2,GE[category] -3 in it. No repetitions, and the number followed by the GE name is in range [1,3].
     sample: [taken.txt](info/test/taken.txt)
-    4. In [main.py](main.py), edit the directory for taken.txt. If you don't want to use taken, set useTaken=False
+    4. In [main.py](main.py), edit the path for taken.txt. If you don't want to use taken, set useTaken=False
     5. run main.py and you will get a schedule.
 
-NOTE: right now it only has data for CS major with specific specializations
+NOTE: Currently it only has information for CS major with specific specializations. Not for other majors or students at other schools.
 
 
 ## Current Course Scheduling Algorithm
