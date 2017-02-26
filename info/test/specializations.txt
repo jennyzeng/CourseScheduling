@@ -1,13 +1,25 @@
 Computer Science
+University
+1
+{
+HISTORY 40A
+HISTORY 40B
+HISTORY 40C
+}
+1
+{
+POLSCI 21A
+}
+;
 GEI
 all
 {
-WRITING 39B
-WRITING 39C
+WRITING LOW1
+WRITING LOW2
 }
 ;
 GEII
-all
+3
 {
 GEII -1
 GEII -2
@@ -16,22 +28,26 @@ I&CSCI 51
 }
 ;
 GEIII
-all
+3
 {
+POLSCI 21A
 GEIII -1
 GEIII -2
 GEIII -3
 }
 GEIV
-all
+3
 {
+HISTORY 40A
+HISTORY 40B
+HISTORY 40C
 GEIV -1
 GEIV -2
 GEIV -3
 }
 ;
 GEV
-1
+2
 {
 I&CSCI 32
 STATS 67
@@ -44,7 +60,7 @@ GEV -Vb1
 }
 ;
 GEVI
-all
+1
 {
 GEVI -1
 GEVII -1
@@ -76,7 +92,7 @@ MATH 3A
 }
 ;
 Upper-division
-all
+2
 {
 COMPSCI 161
 I&CSCI 139W
@@ -148,7 +164,12 @@ IN4MATX 134
 }
 ;
 Algorithms
-all
+2
+{
+COMPSCI 178
+COMPSCI 171
+}
+4
 {
 COMPSCI 162
 COMPSCI 163
@@ -156,8 +177,12 @@ COMPSCI 164
 COMPSCI 165
 COMPSCI 167
 COMPSCI 169
+COMPSCI 168
+COMPSCI 177
+COMPSCI 179
 }
 ;
+Architecture and Embedded Systems
 4
 {
 COMPSCI 144
@@ -169,12 +194,14 @@ COMPSCI 153
 COMPSCI 154
 }
 recommend
+{
 COMPSCI 131
 COMPSCI 142A
 COMPSCI 143A
+}
 ;
 Bioinformatics
-all
+1
 {
 COMPSCI 184A
 }
@@ -187,7 +214,7 @@ COMPSCI 189
 }
 ;
 Information
-all
+3
 {
 COMPSCI 121
 COMPSCI 122A

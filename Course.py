@@ -50,16 +50,20 @@ class Course:
 		       "upperOnly: {upp}".format(
 			name=self.name, units=self.units,
 			quar=self.quarters, prereq=self.prereq, sat=self.satisfy,
-			spec=self.satSpecs,upp=self.isUpperOnly)
+			spec=self.satSpecs, upp=self.isUpperOnly)
+
 	@property
 	def courseValue(self):
 		return -(len(self.satSpecs) + len(self.satisfy))
 
-	def delPrereq(self, cname):
+	def delPrereq(self, cname, sat):
 		for i in range(len(self.prereq)):
 			if cname in self.prereq[i]:
-				del self.prereq[i]
-				del self.prereqBool[i]
+				if sat:
+					del self.prereq[i]
+					del self.prereqBool[i]
+				else:
+					self.prereq[i].remove(cname)
 				return True
 		return False
 
@@ -114,7 +118,6 @@ class Course:
 
 
 class CoursesGraph:
-
 	def __init__(self, adjList=None):
 		self.adjList = adjList if adjList else dict()
 
@@ -141,7 +144,7 @@ class CoursesGraph:
 	def courseValue(self, course, specsTable):
 		total = 0
 		for spec, num in course.satSpecs:
-			if specsTable[spec][num]!= 0:
+			if specsTable[spec][num] != 0:
 				total -= 1
 
 		for c in course.satisfy:
@@ -150,8 +153,6 @@ class CoursesGraph:
 					total -= 0.1 if specsTable[spec][num] > 0 else 0
 					break
 		return total
-
-
 
 	def resetGraph(self):
 		for course in self.adjList.values():
@@ -169,10 +170,10 @@ class CoursesGraph:
 			return True
 		return False
 
-	def delCourse(self, cname):
+	def delCourse(self, cname,sat):
 		for sat in self[cname].satisfy:
 			if self[sat]:
-				self[sat].delPrereq(cname)
+				self[sat].delPrereq(cname,sat)
 		self.adjList.pop(cname)
 
 	def addCourses(self, courses):
@@ -242,9 +243,8 @@ class CoursesGraph:
 		tag those courses that this course can satisfy and return list of courses"""
 		L = []
 		for sat in self[course].getSatisfy():
-			tag = self[sat].tagPrereq(course)
-			if tag:
-				L.append(sat)
+			if self[sat]:
+				tag = self[sat].tagPrereq(course)
+				if tag:
+					L.append(sat)
 		return L
-
-

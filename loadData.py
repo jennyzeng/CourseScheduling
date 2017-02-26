@@ -65,10 +65,18 @@ class DataLoading:
 					for specName, index in course.getSpecs():
 						if specsTable[specName][index] > 0:
 							specsTable[specName][index] -= 1
-					graph.delCourse(cname)
+					graph.delCourse(cname,True)
 		if totalUnits >= 90:
 			graph.delUpper()
-		return startQ
+		return startQ, totalUnits
+
+	def loadAvoid(self, graph, filename):
+		with open(filename) as f:
+			for cname in f.readlines():
+				cname = cname.replace(" ", "").strip()
+				course = graph[cname]
+				if course:
+					graph.delCourse(cname, False)
 
 
 

@@ -3,7 +3,7 @@ from scheduling import *
 from loadData import DataLoading
 
 
-def loadData(major, specs, specsFilename, courseFilename, useTaken, takenFilename):
+def loadData(major, specs, specsFilename, courseFilename, useTaken, takenFilename, useAvoid, avoidFilename):
 	specsCourse, specsTable = DataLoading().loadSpec(
 									major=major, specs=specs, filename=specsFilename)
 	graph = CoursesGraph()
@@ -11,10 +11,14 @@ def loadData(major, specs, specsFilename, courseFilename, useTaken, takenFilenam
 	graph.updateSatisfies()
 	graph.loadSpecs(specsCourse)
 	defaultUnits = 0
+	startQ = 0
 	if useTaken:
-		defaultUnits = DataLoading().loadTaken(graph, specsTable, takenFilename)
+		startQ, defaultUnits= DataLoading().loadTaken(graph, specsTable, takenFilename)
+	if useAvoid:
+		DataLoading().loadAvoid(graph, avoidFilename)
 
-	return graph, specsTable, defaultUnits
+	return graph, specsTable, defaultUnits, startQ
+
 
 
 def printResult(L, bestBound, startQ, creditsPerQuarter):
@@ -28,21 +32,26 @@ def printResult(L, bestBound, startQ, creditsPerQuarter):
 
 
 if __name__ == '__main__':
-	creditsPerQuarter = 17
-	startQ = 2
+	creditsPerQuarter = 16
 	# data loading
 	## for Computer Science graph
-	graph, specsTable, defaultUnits = loadData(
+	graph, specsTable, defaultUnits, startQ = loadData(
 		major="Computer Science",
-		specs=["GEI", "GEII", "GEIII", "GEIV", "GEV", "GEVI",
+		specs=["University",
+			 "GEI", "GEII", "GEIII", "GEIV", "GEV", "GEVI",
 		       "Lower-division",
 		       "Upper-division",
 		       "Algorithms",
-		       "Intelligent Systems"],
+		       "Intelligent Systems"
+		       # "Visual Computing"
+		       #"Information"
+		       ],
 		specsFilename="info/test/specializations.txt",
 		courseFilename="info/test/fullcourses.txt",
 		useTaken=True,
-		takenFilename="info/test/taken.txt"
+		takenFilename="info/test/taken.txt",
+		useAvoid=True,
+		avoidFilename="info/test/avoid.txt"
 	)
 	# scheduling
 	L, bestBound = CourseScheduling(graph, specsTable, creditsPerQuarter, startQ, defaultUnits).findBestSchedule(5)

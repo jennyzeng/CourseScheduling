@@ -6,9 +6,8 @@ described the Coffman-graham algorithm that I will be working on, and some diffi
 [research-initial-plan.pdf](research-initial-plan.pdf)
 
 ## TODOs
-1. Allow input courses already taken and schedule at the middle.
-2. Evaulate the quality of solution
-3. Compare it with other job scheduling algorithms
+1. Evaulate the quality of solution
+2. Compare it with other job scheduling algorithms
 
 ## How to use this algorithm right now
 
@@ -23,7 +22,7 @@ described the Coffman-graham algorithm that I will be working on, and some diffi
     4. In [main.py](main.py), edit the path for taken.txt. If you don't want to use taken, set useTaken=False
     5. run main.py and you will get a schedule.
 
-NOTE: Currently it only has information for CS major with specific specializations. Not for other majors or students at other schools.
+NOTE: Currently it only has information for CS major with specific specializations. Not for students with other majors or at other schools.
 
 
 ## Current Course Scheduling Algorithm
@@ -122,16 +121,18 @@ O(1) because it will create at most 3 levels for a course
 
 
 ## Current Results
-1. Max heap with a heuristic estimation for course values for better performance, but increase the time complexity
+1. Allow input courses already taken and schedule from the half-way.
 
-2. It will make schedules on a upper bound range and pick the most efficient one.
+2. Max heap with a heuristic estimation for course values for better performance, but increase the time complexity
 
-3. solve the problem that some courses are upper standing student only.
+3. It will make schedules on a upper bound range and pick the most efficient one.
+
+4. solve the problem that some courses are upper standing student only.
     Set a upper bound advanced. The bound will prevent the algorithm from assigning upper standing only courses into a level < upper bound (specified in function).
 
-4. it can pick more courses randomly to fullfill the 11 upper requirement after loading 11 upper requirement in the specialization txt file.
+5. it can pick more courses randomly to fullfill the 11 upper requirement after loading 11 upper requirement in the specialization txt file.
 
-5. A Simple Schedule
+6. A Simple Schedule
 
     This schedule can handle the following conditions:
 
@@ -170,17 +171,17 @@ O(1) because it will create at most 3 levels for a course
     best upper bound: year 2 quarter 3
 
     ```
-6. Original coffman-graham algorithm.
+7. Original coffman-graham algorithm.
     - [directedGraphRepresentation](coffman_graham_algorithm/directedGraphRepresentation.py)
     - [coffman-graham algorithm](coffman_graham_algorithm/coffman-grapham.py)
 
-7. Crawler
+8. Crawler
     - [WebSoc and prerequistes Crawler (using beautiful soup and requests libraries)](WebSoc.py)
 
     - Right now it still cannot get those courses without prereqs automatically
     - For courses such as I&CSCI 51, have to manually modify it to be I&CSCI 51+51L, and change the units to be 6.
 
-8. Courses information I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I integrated my crawlers into one on week 4 in Winter quarter.
+9. Courses information I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I integrated my crawlers into one on week 4 in Winter quarter.
 
     **sample**:
     - [Courses info in some departments](info/test/fullcourses.txt)
@@ -194,7 +195,7 @@ O(1) because it will create at most 3 levels for a course
     NOTE: Courses information here is just used for testing and is not accurate because the quarters a course will be offered may vary each year.
 
 
-9. CS specializations information I got manually from [catalogue.uci.edu](http://catalogue.uci.edu/donaldbrenschoolofinformationandcomputersciences/departmentofcomputerscience/#majorstext)
+10. CS specializations information I got manually from [catalogue.uci.edu](http://catalogue.uci.edu/donaldbrenschoolofinformationandcomputersciences/departmentofcomputerscience/#majorstext)
 
     **sample**:
     - [CS specializations](info/test/specializations.txt)

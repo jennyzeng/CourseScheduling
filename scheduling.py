@@ -28,7 +28,7 @@ class CourseScheduling:
 			specsTable = copy.deepcopy(self.specsTable)
 			curSchedule = self.courseScheduling([[]], specsTable, bound)
 
-			if self._isValidSchedule(curSchedule):
+			if self._isValidSchedule(curSchedule, specsTable):
 				if not L or len(L) > len(curSchedule):
 					L = curSchedule
 					bestBound = bound
@@ -88,8 +88,9 @@ class CourseScheduling:
 	def _resetGraph(self):
 		self.graph.resetGraph()
 
-	def _isValidSchedule(self, L):
+	def _isValidSchedule(self, L, specsTable):
 		total = 0
+		if any( any(i) for i in specsTable.values()): return False
 		for step in range(len(L)):
 			levelTotal = 0
 			for cname in L[step]:
