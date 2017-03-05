@@ -39,6 +39,7 @@ class Course:
 		self.prereqBool = [None] * len(self.prereq)
 		self.satSpecs = set()
 		self.isUpperOnly = isUpperOnly
+		self.courseValue = None
 
 	def __str__(self):
 		return "name: {name}\n" \
@@ -52,9 +53,6 @@ class Course:
 			quar=self.quarters, prereq=self.prereq, sat=self.satisfy,
 			spec=self.satSpecs, upp=self.isUpperOnly)
 
-	@property
-	def courseValue(self):
-		return -(len(self.satSpecs) + len(self.satisfy))
 
 	def delPrereq(self, cname, sat):
 		for i in range(len(self.prereq)):
@@ -87,6 +85,15 @@ class Course:
 
 	def getPrereq(self):
 		return self.prereq
+
+	def getNeighbors(self):
+		"""
+		:return: all its prereqs
+		"""
+
+		return [i for pset in self.prereq for i in pset]
+
+
 
 	def hasPrereq(self):
 		return len(self.prereq) != 0
@@ -134,6 +141,7 @@ class CoursesGraph:
 	def __setitem__(self, key, value):
 		self.adjList[key] = value
 
+
 	def values(self):
 		return self.adjList.values()
 
@@ -141,17 +149,16 @@ class CoursesGraph:
 		for cname in self.adjList:
 			self.adjList[cname].isUpperOnly = False
 
-	def courseValue(self, course, specsTable):
+	def courseValue(self, cname, specsTable):
+		course = self.adjList[cname]
+		if course.courseValue:
+			return self.adjList[cname].courseValue
 		total = 0
 		for spec, num in course.satSpecs:
 			if specsTable[spec][num] != 0:
 				total -= 1
 
-		for c in course.satisfy:
-			if self[c]:
-				for spec, num in self[c].satSpecs:
-					total -= 0.1 if specsTable[spec][num] > 0 else 0
-					break
+		self.adjList[cname].courseValue = total
 		return total
 
 	def resetGraph(self):
@@ -170,10 +177,10 @@ class CoursesGraph:
 			return True
 		return False
 
-	def delCourse(self, cname,sat):
-		for sat in self[cname].satisfy:
-			if self[sat]:
-				self[sat].delPrereq(cname,sat)
+	def delCourse(self, cname, sat):
+		for course in self[cname].satisfy:
+			if self[course]:
+				self[course].delPrereq(cname, sat)
 		self.adjList.pop(cname)
 
 	def addCourses(self, courses):
@@ -210,11 +217,18 @@ class CoursesGraph:
 			return False
 
 	def loadSpecs(self, SpecsCourse):
+		required = []
 		for spec, courseSetList in SpecsCourse.items():
 			for i in range(len(courseSetList)):
 				for c in courseSetList[i]:
 					self.addSpec(c, spec, i)
+					required.append(c)
+		# clear not required course
+		for cname in list(self.adjList.keys()):
+			if cname not in required:
+				self.delCourse(cname, False)
 		return
+
 
 	def getCourses(self):
 		"""

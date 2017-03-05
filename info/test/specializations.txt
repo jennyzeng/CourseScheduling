@@ -12,7 +12,7 @@ POLSCI 21A
 }
 ;
 GEI
-all
+2
 {
 WRITING LOW1
 WRITING LOW2
@@ -63,7 +63,17 @@ GEVI
 1
 {
 GEVI -1
+}
+;
+GEVII
+1
+{
 GEVII -1
+}
+;
+GEVIII
+1
+{
 GEVIII -1
 }
 ;

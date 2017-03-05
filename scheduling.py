@@ -1,24 +1,19 @@
 from math import ceil
 import copy
 import heapq
+from collections import Counter, deque
 
 
 class CourseScheduling:
 	upperUnits = 90
 
-	def __init__(self, graph, SpecsTable, unitPerQ,startQ, defaultUnits):
+	def __init__(self, graph, SpecsTable, unitPerQ, startQ, defaultUnits):
 		self.graph = graph
 		self.specsTable = SpecsTable
 		self.unitPerQ = unitPerQ
-		self.upperLevel = ceil((self.upperUnits-defaultUnits) / self.unitPerQ) - 1  # -1 for zero indexing
-		if self.upperLevel<0: self.upperLevel=0
+		self.upperLevel = ceil((self.upperUnits - defaultUnits) / self.unitPerQ) - 1  # -1 for zero indexing
+		if self.upperLevel < 0: self.upperLevel = 0
 		self.startQ = startQ
-
-	def widthFunc(self, level, courseUnit):
-		total = courseUnit
-		for c in level:
-			total += self.graph[c].units
-		return total > self.unitPerQ
 
 	def findBestSchedule(self, boundRange):
 		L = None
@@ -36,6 +31,8 @@ class CourseScheduling:
 		return L, bestBound
 
 	def courseScheduling(self, L, specsTable, upperBound):
+		# label courses
+		self._labeling()
 		# initialize heap
 		Q = self._iniHeap(specsTable)
 		while Q:
@@ -49,7 +46,7 @@ class CourseScheduling:
 
 			if not assigned:  # it means that the highest level does not have cur's dependents
 				step = len(L) - 2
-				if self.widthFunc(L[-1], self.graph[cur].units):  # highest level is full, should add a new level
+				if self._widthFunc(L[-1], self.graph[cur].units):  # highest level is full, should add a new level
 					L.append([])
 				self._lastAccpetedLevel(self.graph[cur], L, upperBound)
 
@@ -72,8 +69,8 @@ class CourseScheduling:
 						assigned = True
 						break
 
-					elif not self.widthFunc(L[step], self.graph[cur].units) \
-							and self.graph[cur].isValidQuarter(step+self.startQ):
+					elif not self._widthFunc(L[step], self.graph[cur].units) and self.graph[cur].isValidQuarter(
+									step + self.startQ):
 						# if step is not full and cur will be offered this quarter, this is a possible level
 						lastStep = step
 				step -= 1
@@ -85,12 +82,69 @@ class CourseScheduling:
 		self._clearEmptyLevels(L)
 		return L
 
+	def _labeling(self):
+		# we only need the distance for now
+		D, _ = self._DAGLongestPath()
+		for v in D:
+			self.graph[v].courseValue = D[v]
+
+	def _relax(self, D, P, x, y, dis):
+		# since distance are all negative values, we get the
+		# shortest distance
+		if D[x] + dis < D[y]:
+			P[y] = x
+			D[y] = D[x] + dis
+
+	def _DAGLongestPath(self):
+		D = Counter()
+		P = {}
+		topoOrder, startVertices = self._topologicalOrder()
+		for cname in startVertices:
+			D[cname] = 0
+		for cname, course in self.graph.getCourses():
+			if cname not in startVertices:
+				D[cname] = 999  # infinity
+			P[cname] = None
+		for cname in topoOrder:
+			for w in self.graph[cname].getNeighbors():
+				if w in self.graph:
+					self._relax(D, P, cname, w,
+					            self.graph.courseValue(w, self.specsTable))
+		return D, P
+
+	def _topologicalOrder(self):
+		C = deque()  # collection of vertices with no incoming edges
+		D = Counter()
+		for cname, course in self.graph.getCourses():
+			for w in self.graph[cname].getNeighbors():
+				if w in self.graph:
+					D[w] += 1
+		for cname,course in self.graph.getCourses():
+			if D[cname] == 0:
+				C.append(cname)
+		output = []
+		startVertices = copy.deepcopy(C)
+		while C:
+			cname = C.popleft()
+			output.append(cname)
+			for w in self.graph[cname].getNeighbors():
+				if w in self.graph:
+					D[w] -= 1
+					if D[w] == 0:
+						C.append(w)
+		# do not check len because we know it must be a topological order here
+		return output, startVertices
+
+	def _widthFunc(self, level, courseUnit):
+		total = courseUnit + sum(self.graph[c].units for c in level)
+		return total > self.unitPerQ
+
 	def _resetGraph(self):
 		self.graph.resetGraph()
 
 	def _isValidSchedule(self, L, specsTable):
 		total = 0
-		if any( any(i) for i in specsTable.values()): return False
+		if any(any(i) for i in specsTable.values()): return False
 		for step in range(len(L)):
 			levelTotal = 0
 			for cname in L[step]:
@@ -107,10 +161,9 @@ class CourseScheduling:
 		"""
 		Q = []
 		for name, course in self.graph.getCourses():
-			courseValue = self.graph.courseValue(course, specsTable)
+			courseValue = self.graph.courseValue(name, specsTable)
 			if not course.hasPrereq() and courseValue:
-				heapq.heappush(Q,(courseValue, name))
-			# Q.append(name)
+				heapq.heappush(Q, (courseValue, name))
 
 		return Q
 
@@ -118,7 +171,7 @@ class CourseScheduling:
 		# add those courses that are satisfied into the Q
 		satisfies = self.graph.tagSatisfy(course)
 		for sat in satisfies:
-			courseValue = self.graph.courseValue(self.graph[sat], specsTable)
+			courseValue = self.graph.courseValue(sat, specsTable)
 			if self.graph[sat].prereqIsSatisfied() and courseValue:
 				heapq.heappush(Q, (courseValue, sat))
 			# Q.append(sat)
@@ -132,7 +185,7 @@ class CourseScheduling:
 			while len(L) - 1 < bound:
 				L.append([])
 
-		while not course.isValidQuarter(len(L)+self.startQ - 1):
+		while not course.isValidQuarter(len(L) + self.startQ - 1):
 			L.append([])
 		return L
 
