@@ -49,9 +49,9 @@ if __name__ == '__main__':
 		       ],
 		specsFilename="info/test/specializations.txt",
 		courseFilename="info/test/fullcourses.txt",
-		useTaken=False,
+		useTaken=True,
 		takenFilename="info/test/taken.txt",
-		useAvoid=False,
+		useAvoid=True,
 		avoidFilename="info/test/avoid.txt"
 	)
 	# scheduling
