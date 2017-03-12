@@ -1,7 +1,8 @@
-from Course import Course, CoursesGraph
+import CoursesGraph
+import Course
 from scheduling import *
 from loadData import DataLoading
-
+from CoursesGraph import CoursesGraph
 
 def loadData(major, specs, specsFilename, courseFilename, useTaken, takenFilename, useAvoid, avoidFilename):
 	specsCourse, specsTable = DataLoading().loadSpec(
@@ -33,7 +34,7 @@ def printResult(L, bestBound, startQ, creditsPerQuarter):
 
 
 if __name__ == '__main__':
-	creditsPerQuarter = 20
+	creditsPerQuarter = 16
 	# data loading
 	## for Computer Science graph
 	graph, specsTable, defaultUnits, startQ = loadData(
@@ -49,29 +50,29 @@ if __name__ == '__main__':
 		       ],
 		specsFilename="info/test/specializations.txt",
 		courseFilename="info/test/fullcourses.txt",
-		useTaken=True,
+		useTaken=False,
 		takenFilename="info/test/taken.txt",
-		useAvoid=True,
+		useAvoid=False,
 		avoidFilename="info/test/avoid.txt"
 	)
 	# scheduling
-	L, bestBound = CourseScheduling(graph, specsTable, creditsPerQuarter, startQ, defaultUnits).findBestSchedule(5)
+	L, bestBound = CourseScheduling(graph, specsTable, creditsPerQuarter, startQ, defaultUnits).findBestSchedule(10)
 	printResult(L, bestBound, startQ, creditsPerQuarter)
 
 
 """
 start quarter:  0
-Taking 17 credits per quarter:
-year 1 quarter 1: ['I&CSCI31', 'I&CSCI6B', 'MATH2A', 'WRITINGLOW1', 'I&CSCI90']
+Taking 16 credits per quarter:
+year 1 quarter 1: ['I&CSCI31', 'MATH2A', 'I&CSCI6B', 'HISTORY40A']
 year 1 quarter 2: ['I&CSCI32', 'MATH2B', 'I&CSCI51']
-year 1 quarter 3: ['I&CSCI33', 'I&CSCI6D', 'STATS67', 'MATH3A']
-year 2 quarter 1: ['I&CSCI45C', 'COMPSCI151', 'HISTORY40A', 'POLSCI21A']
-year 2 quarter 2: ['I&CSCI46', 'HISTORY40B', 'COMPSCI122A', 'COMPSCI178']
-year 2 quarter 3: ['HISTORY40C', 'COMPSCI143A', 'COMPSCI132', 'IN4MATX43']
-year 3 quarter 1: ['COMPSCI161', 'COMPSCI112', 'COMPSCI171', 'COMPSCI141']
-year 3 quarter 2: ['COMPSCI116', 'I&CSCI53+53L', 'WRITINGLOW2']
-year 3 quarter 3: ['COMPSCI165', 'GEII-1', 'GEIII-1', 'GEIII-2']
-year 4 quarter 1: ['COMPSCI113', 'GEVI-1', 'GEVII-1', 'GEVIII-1']
-year 4 quarter 2: ['I&CSCI139W']
+year 1 quarter 3: ['I&CSCI33', 'STATS67', 'I&CSCI6D', 'MATH3A']
+year 2 quarter 1: ['I&CSCI45C', 'COMPSCI169', 'POLSCI21A', 'WRITINGLOW1']
+year 2 quarter 2: ['I&CSCI46', 'COMPSCI178', 'HISTORY40B', 'GEII-1']
+year 2 quarter 3: ['HISTORY40C', 'GEIII-1', 'GEIII-2', 'GEVI-1']
+year 3 quarter 1: ['COMPSCI161', 'COMPSCI171', 'GEVII-1', 'GEVIII-1']
+year 3 quarter 2: ['COMPSCI162', 'COMPSCI116', 'COMPSCI175', 'WRITINGLOW2']
+year 3 quarter 3: ['COMPSCI163', 'COMPSCI177', 'COMPSCI165', 'IN4MATX43']
+year 4 quarter 1: ['COMPSCI179', 'I&CSCI90', 'I&CSCI139W']
+year 4 quarter 2: ['COMPSCI164', 'I&CSCI53+53L']
 best upper bound: year 2 quarter 3
 """

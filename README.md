@@ -124,8 +124,9 @@ O(1) because it will create at most 3 levels for a course
 
 
 ## Current Results
+1. Use 6 quarters history to get a more accurate result
 
-1. Implement Hu's Algorithm by labeling each course with a distance.
+2. Implement Hu's Algorithm by labeling each course with a distance.
 
     - distance calculation: its own course value + distance to the "sink"
 
@@ -134,20 +135,20 @@ O(1) because it will create at most 3 levels for a course
     After labeling, when a user takes 20 credits per quarter, the user can fulfill requirements in 3 years.
     On the contrary, without labeling, it takes the user 3 years and 1 quarter.
 
-2. Allow input what courses the user want to avoid.
+3. Allow input what courses the user want to avoid.
 
-3. Allow input courses already taken and schedule from the half-way.
+4. Allow input courses already taken and schedule from the half-way.
 
-4. Max heap with a heuristic estimation for course values for better performance, but increase the time complexity
+5. Max heap with a heuristic estimation for course values for better performance, but increase the time complexity
 
-5. It will make schedules on a upper bound range and pick the most efficient one.
+6. It will make schedules on a upper bound range and pick the most efficient one.
 
-6. solve the problem that some courses are upper standing student only.
+7. solve the problem that some courses are upper standing student only.
     Set a upper bound advanced. The bound will prevent the algorithm from assigning upper standing only courses into a level < upper bound (specified in function).
 
-7. it can pick more courses randomly to fullfill the 11 upper requirement after loading 11 upper requirement in the specialization txt file.
+8. it can pick more courses randomly to fullfill the 11 upper requirement after loading 11 upper requirement in the specialization txt file.
 
-8. A Simple Schedule
+9. A Simple Schedule
 
     This schedule can handle the following conditions:
 
@@ -193,17 +194,17 @@ O(1) because it will create at most 3 levels for a course
         best upper bound: year 1 quarter 1
         ```
 
-9. Original coffman-graham algorithm.
+10. Original coffman-graham algorithm.
     - [directedGraphRepresentation](coffman_graham_algorithm/directedGraphRepresentation.py)
     - [coffman-graham algorithm](coffman_graham_algorithm/coffman-grapham.py)
 
-10. Crawler
+11. Crawler
     - [WebSoc and prerequistes Crawler (using beautiful soup and requests libraries)](WebSoc.py)
 
     - Right now it still cannot get those courses without prereqs automatically
     - For courses such as I&CSCI 51, have to manually modify it to be I&CSCI 51+51L, and change the units to be 6.
 
-11. Courses information I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I integrated my crawlers into one on week 4 in Winter quarter.
+12. Courses information I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I integrated my crawlers into one on week 4 in Winter quarter.
 
     **sample**:
     - [Courses info in some departments](info/test/fullcourses.txt)
@@ -217,7 +218,7 @@ O(1) because it will create at most 3 levels for a course
     NOTE: Courses information here is just used for testing and is not accurate because the quarters a course will be offered may vary each year.
 
 
-12. CS specializations information I got manually from [catalogue.uci.edu](http://catalogue.uci.edu/donaldbrenschoolofinformationandcomputersciences/departmentofcomputerscience/#majorstext)
+13. CS specializations information I got manually from [catalogue.uci.edu](http://catalogue.uci.edu/donaldbrenschoolofinformationandcomputersciences/departmentofcomputerscience/#majorstext)
 
     **sample**:
     - [CS specializations](info/test/specializations.txt)

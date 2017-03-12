@@ -1,5 +1,5 @@
-from Course import Course, CoursesGraph
-from WebSoc import WebSoc
+from Course import Course
+from CoursesGraph import CoursesGraph
 import re
 
 
