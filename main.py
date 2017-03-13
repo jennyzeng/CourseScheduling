@@ -1,17 +1,16 @@
 import CoursesGraph
-import Course
 from scheduling import *
 from loadData import DataLoading
 from CoursesGraph import CoursesGraph
 
-def loadData(major, specs, specsFilename, courseFilename, useTaken, takenFilename, useAvoid, avoidFilename):
+def loadData(major, specs, specsFilename, courseFilename, useTaken, takenFilename, useAvoid, avoidFilename, widthFuncFilename):
 	specsCourse, specsTable = DataLoading().loadSpec(
 									major=major, specs=specs, filename=specsFilename)
 	graph = CoursesGraph()
 	DataLoading().loadCourses(graph, courseFilename)
 	graph.loadSpecs(specsCourse)
 	graph.updateSatisfies()
-
+	widthFuncTable = DataLoading().loadWidthFuncTable(widthFuncFilename)
 	defaultUnits = 0
 	startQ = 0
 	if useTaken:
@@ -19,13 +18,13 @@ def loadData(major, specs, specsFilename, courseFilename, useTaken, takenFilenam
 	if useAvoid:
 		DataLoading().loadAvoid(graph, avoidFilename)
 
-	return graph, specsTable, defaultUnits, startQ
+	return graph, specsTable, defaultUnits, startQ, widthFuncTable
 
 
 
-def printResult(L, bestBound, startQ, creditsPerQuarter):
+def printResult(L, bestBound, startQ):
 	print("start quarter: ", startQ)
-	print("Taking %d credits per quarter: " % (creditsPerQuarter))
+	# print("Taking %d credits per quarter: " % (creditsPerQuarter))
 	for i, level in enumerate(L):
 		i = i + startQ
 		print("year %d quarter %d:" % (i // 3 + 1, i % 3 + 1), level)
@@ -34,10 +33,10 @@ def printResult(L, bestBound, startQ, creditsPerQuarter):
 
 
 if __name__ == '__main__':
-	creditsPerQuarter = 16
+	# creditsPerQuarter = 16
 	# data loading
 	## for Computer Science graph
-	graph, specsTable, defaultUnits, startQ = loadData(
+	graph, specsTable, defaultUnits, startQ, widthFuncTable = loadData(
 		major="Computer Science",
 		specs=["University",
 			 "GEI", "GEII", "GEIII", "GEIV", "GEV", "GEVI","GEVII","GEVIII",
@@ -47,17 +46,19 @@ if __name__ == '__main__':
 		       "Intelligent Systems"
 		       # "Visual Computing"
 		       #"Information"
+		       #"Networked Systems"
 		       ],
 		specsFilename="info/test/specializations.txt",
 		courseFilename="info/test/fullcourses.txt",
 		useTaken=False,
 		takenFilename="info/test/taken.txt",
 		useAvoid=False,
-		avoidFilename="info/test/avoid.txt"
+		avoidFilename="info/test/avoid.txt",
+		widthFuncFilename="info/test/widthFunc.txt"
 	)
 	# scheduling
-	L, bestBound = CourseScheduling(graph, specsTable, creditsPerQuarter, startQ, defaultUnits).findBestSchedule(10)
-	printResult(L, bestBound, startQ, creditsPerQuarter)
+	L, bestBound = CourseScheduling(graph, specsTable, startQ, 90-defaultUnits, widthFuncTable).findBestSchedule(10)
+	printResult(L, bestBound, startQ)
 
 
 """

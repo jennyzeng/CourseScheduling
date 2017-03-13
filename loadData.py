@@ -7,6 +7,17 @@ class DataLoading:
 	def __init__(self):
 		pass
 
+	def loadWidthFuncTable(self,filename):
+		wdict= {}
+		with open(filename, 'r') as f:
+			for line in f:
+				line = line.strip().split(":")
+				if line[0]=="else":
+					wdict["else"] = int(line[1])
+				else:
+					wdict[int(line[0])] = int(line[1])
+		return wdict
+
 	def loadCourses(self, graph: CoursesGraph, prereqFileName):
 		with open(prereqFileName, 'r') as f:
 			for line in f:

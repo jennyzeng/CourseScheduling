@@ -2,11 +2,11 @@
 
 ## Initial Plan
 In my initial plan, I illustrated my main idea of the course scheduling project,
-described the Coffman-graham algorithm that I will be working on, and some difficulties as well as interesting points.
+described the Coffman-Graham algorithm that I will be working on, and some difficulties as well as interesting points.
 [research-initial-plan.pdf](research-initial-plan.pdf)
 
 ## TODOs
-1. Evaulate the quality of solution
+1. Evaluate the quality of solution
 2. Compare it with other job scheduling algorithms
 
 ## How to use this algorithm right now
@@ -27,6 +27,52 @@ described the Coffman-graham algorithm that I will be working on, and some diffi
 
 NOTE: Currently it only has information for CS major with specific specializations. Not for students with other majors or at other schools.
 
+## A Simple Schedule
+
+    This schedule can handle the following conditions:
+
+    1. GE requirement
+    2. specialization requirement
+    3. the quarter offering and course units
+    4. Some courses are upper division standing only
+    5. different level has different units restriction
+
+    **sample:**
+    - CS Student specialized in Intelligent Systems and Algorithms. No taken.
+        ```
+        start quarter:  0
+        Taking 20 credits per quarter:
+        year 1 quarter 1: ['I&CSCI31', 'MATH2A', 'I&CSCI6B', 'WRITINGLOW1', 'HISTORY40A']
+        year 1 quarter 2: ['I&CSCI32', 'MATH2B', 'I&CSCI6D', 'I&CSCI51']
+        year 1 quarter 3: ['I&CSCI33', 'STATS67', 'MATH3A', 'HISTORY40C', 'POLSCI21A']
+        year 2 quarter 1: ['I&CSCI45C', 'COMPSCI151', 'COMPSCI169', 'GEII-1', 'GEIII-1']
+        year 2 quarter 2: ['I&CSCI46', 'COMPSCI178', 'COMPSCI121', 'HISTORY40B', 'GEIII-2']
+        year 2 quarter 3: ['COMPSCI177', 'GEVI-1', 'GEVII-1', 'GEVIII-1', 'IN4MATX43']
+        year 3 quarter 1: ['COMPSCI161', 'COMPSCI171', 'I&CSCI90', 'WRITINGLOW2']
+        year 3 quarter 2: ['COMPSCI162', 'COMPSCI116', 'COMPSCI175', 'I&CSCI53+53L']
+        year 3 quarter 3: ['COMPSCI163', 'COMPSCI165', 'I&CSCI139W']
+        best upper bound: year 2 quarter 3
+        ```
+
+    - CS Student specialized in Intelligent Systems and Algorithms. Use "taken".
+        ```
+        start quarter:  2
+        Taking 20 credits per quarter:
+        year 1 quarter 3: ['COMPSCI177', 'COMPSCI163', 'COMPSCI165', 'COMPSCI175', 'GEVII-1']
+        year 2 quarter 1: ['COMPSCI151', 'COMPSCI169', 'HISTORY40A', 'I&CSCI139W']
+        year 2 quarter 2: ['COMPSCI167', 'HISTORY40B', 'I&CSCI53+53L']
+        best upper bound: year 1 quarter 1
+        ```
+
+    - CS Student specialized in Intelligent Systems and Algorithms. Use "taken" and "avoid" ( we see that it avoids taking COMPSCI151 so it takes COMPSCI111 instead)
+        ```
+        start quarter:  2
+        Taking 20 credits per quarter:
+        year 1 quarter 3: ['COMPSCI177', 'COMPSCI163', 'COMPSCI165', 'COMPSCI175', 'GEVII-1']
+        year 2 quarter 1: ['COMPSCI169', 'HISTORY40A', 'COMPSCI111', 'I&CSCI139W']
+        year 2 quarter 2: ['COMPSCI167', 'HISTORY40B', 'I&CSCI53+53L']
+        best upper bound: year 1 quarter 1
+        ```
 
 ## Current Course Scheduling Algorithm
 ### in main:
@@ -124,87 +170,40 @@ O(1) because it will create at most 3 levels for a course
 
 
 ## Current Results
-1. Use 6 quarters history to get a more accurate result
 
-2. Implement Hu's Algorithm by labeling each course with a distance.
+1. Customizable width function for every level
 
+2. Use 6 quarters history to get a more accurate result
+
+3. Implement Hu's Algorithm by labeling each course with a distance.
     - distance calculation: its own course value + distance to the "sink"
-
     - course value calculation: the number of specializations it satisfies.
 
-    After labeling, when a user takes 20 credits per quarter, the user can fulfill requirements in 3 years.
-    On the contrary, without labeling, it takes the user 3 years and 1 quarter.
+After labeling, when a user takes 20 credits per quarter, the user can fulfill requirements in 3 years.
+On the contrary, without labeling, it takes the user 3 years and 1 quarter.
 
-3. Allow input what courses the user want to avoid.
+4. Allow input what courses the user want to avoid.
 
-4. Allow input courses already taken and schedule from the half-way.
+5. Allow input courses already taken and schedule from the half-way.
 
-5. Max heap with a heuristic estimation for course values for better performance, but increase the time complexity
+6. Priority queue with a heuristic estimation for course values for better performance, but increase the time complexity
 
-6. It will make schedules on a upper bound range and pick the most efficient one.
+7. It will make schedules on a upper bound range and pick the most efficient one.
 
-7. solve the problem that some courses are upper standing student only.
-    Set a upper bound advanced. The bound will prevent the algorithm from assigning upper standing only courses into a level < upper bound (specified in function).
+    -  solve the problem that some courses are upper standing student only.
+    - Set a upper bound advanced. The bound will prevent the algorithm from assigning upper standing only courses into a level < upper bound (specified in function).
 
-8. it can pick more courses randomly to fullfill the 11 upper requirement after loading 11 upper requirement in the specialization txt file.
-
-9. A Simple Schedule
-
-    This schedule can handle the following conditions:
-
-    1. GE requirement
-    2. specialization requirement
-    3. the quarter offering and course units
-    4. Some courses are upper division standing only
-
-    **sample:**
-    - CS Student specialized in Intelligent Systems and Algorithms. No taken.
-        ```
-        start quarter:  0
-        Taking 20 credits per quarter:
-        year 1 quarter 1: ['I&CSCI31', 'MATH2A', 'I&CSCI6B', 'WRITINGLOW1', 'HISTORY40A']
-        year 1 quarter 2: ['I&CSCI32', 'MATH2B', 'I&CSCI6D', 'I&CSCI51']
-        year 1 quarter 3: ['I&CSCI33', 'STATS67', 'MATH3A', 'HISTORY40C', 'POLSCI21A']
-        year 2 quarter 1: ['I&CSCI45C', 'COMPSCI151', 'COMPSCI169', 'GEII-1', 'GEIII-1']
-        year 2 quarter 2: ['I&CSCI46', 'COMPSCI178', 'COMPSCI121', 'HISTORY40B', 'GEIII-2']
-        year 2 quarter 3: ['COMPSCI177', 'GEVI-1', 'GEVII-1', 'GEVIII-1', 'IN4MATX43']
-        year 3 quarter 1: ['COMPSCI161', 'COMPSCI171', 'I&CSCI90', 'WRITINGLOW2']
-        year 3 quarter 2: ['COMPSCI162', 'COMPSCI116', 'COMPSCI175', 'I&CSCI53+53L']
-        year 3 quarter 3: ['COMPSCI163', 'COMPSCI165', 'I&CSCI139W']
-        best upper bound: year 2 quarter 3
-        ```
-
-    - CS Student specialized in Intelligent Systems and Algorithms. Use "taken".
-        ```
-        start quarter:  2
-        Taking 20 credits per quarter:
-        year 1 quarter 3: ['COMPSCI177', 'COMPSCI163', 'COMPSCI165', 'COMPSCI175', 'GEVII-1']
-        year 2 quarter 1: ['COMPSCI151', 'COMPSCI169', 'HISTORY40A', 'I&CSCI139W']
-        year 2 quarter 2: ['COMPSCI167', 'HISTORY40B', 'I&CSCI53+53L']
-        best upper bound: year 1 quarter 1
-        ```
-
-    - CS Student specialized in Intelligent Systems and Algorithms. Use "taken" and "avoid" ( we see that it avoids taking COMPSCI151 so it takes COMPSCI111 instead)
-        ```
-        start quarter:  2
-        Taking 20 credits per quarter:
-        year 1 quarter 3: ['COMPSCI177', 'COMPSCI163', 'COMPSCI165', 'COMPSCI175', 'GEVII-1']
-        year 2 quarter 1: ['COMPSCI169', 'HISTORY40A', 'COMPSCI111', 'I&CSCI139W']
-        year 2 quarter 2: ['COMPSCI167', 'HISTORY40B', 'I&CSCI53+53L']
-        best upper bound: year 1 quarter 1
-        ```
-
-10. Original coffman-graham algorithm.
+8. Original coffman-graham algorithm.
     - [directedGraphRepresentation](coffman_graham_algorithm/directedGraphRepresentation.py)
     - [coffman-graham algorithm](coffman_graham_algorithm/coffman-grapham.py)
 
-11. Crawler
+9. Crawler
     - [WebSoc and prerequistes Crawler (using beautiful soup and requests libraries)](WebSoc.py)
 
     - Right now it still cannot get those courses without prereqs automatically
     - For courses such as I&CSCI 51, have to manually modify it to be I&CSCI 51+51L, and change the units to be 6.
 
-12. Courses information I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I integrated my crawlers into one on week 4 in Winter quarter.
+10. Courses information I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I integrated my crawlers into one on week 4 in Winter quarter.
 
     **sample**:
     - [Courses info in some departments](info/test/fullcourses.txt)
@@ -218,7 +217,7 @@ O(1) because it will create at most 3 levels for a course
     NOTE: Courses information here is just used for testing and is not accurate because the quarters a course will be offered may vary each year.
 
 
-13. CS specializations information I got manually from [catalogue.uci.edu](http://catalogue.uci.edu/donaldbrenschoolofinformationandcomputersciences/departmentofcomputerscience/#majorstext)
+11. CS specializations information I got manually from [catalogue.uci.edu](http://catalogue.uci.edu/donaldbrenschoolofinformationandcomputersciences/departmentofcomputerscience/#majorstext)
 
     **sample**:
     - [CS specializations](info/test/specializations.txt)

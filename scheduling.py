@@ -7,18 +7,20 @@ from collections import Counter, deque
 class CourseScheduling:
 	upperUnits = 90
 
-	def __init__(self, graph, SpecsTable, unitPerQ, startQ, defaultUnits):
+	def __init__(self, graph, SpecsTable,startQ,upperUnits, widthFuncTable):
 		self.graph = graph
 		self.specsTable = SpecsTable
-		self.unitPerQ = unitPerQ
-		self.upperLevel = ceil((self.upperUnits - defaultUnits) / self.unitPerQ) - 1  # -1 for zero indexing
-		if self.upperLevel < 0: self.upperLevel = 0
+		# self.unitPerQ = unitPerQ
+		self.upperUnits = upperUnits if upperUnits>=0 else 0
+		# self.upperLevel = ceil((self.upperUnits - defaultUnits) / self.unitPerQ) - 1  # -1 for zero indexing
+		# if self.upperLevel < 0: self.upperLevel = 0
 		self.startQ = startQ
+		self.widthFuncTable = widthFuncTable
 
 	def findBestSchedule(self, boundRange):
 		L = None
 		bestBound = None
-		for bound in range(self.upperLevel, self.upperLevel + boundRange):
+		for bound in range(0, boundRange):
 			self._resetGraph()
 			specsTable = copy.deepcopy(self.specsTable)
 			curSchedule = self.courseScheduling([[]], specsTable, bound)
@@ -46,7 +48,7 @@ class CourseScheduling:
 
 			if not assigned:  # it means that the highest level does not have cur's dependents
 				step = len(L) - 2
-				if self._widthFunc(L[-1], self.graph[cur].units):  # highest level is full, should add a new level
+				if self._widthFunc(L[-1], len(L)-1, self.graph[cur].units):  # highest level is full, should add a new level
 					L.append([])
 				self._lastAccpetedLevel(self.graph[cur], L, upperBound)
 
@@ -69,7 +71,7 @@ class CourseScheduling:
 						assigned = True
 						break
 
-					elif not self._widthFunc(L[step], self.graph[cur].units) and self.graph[cur].isValidQuarter(
+					elif not self._widthFunc(L[step],step, self.graph[cur].units) and self.graph[cur].isValidQuarter(
 									step + self.startQ):
 						# if step is not full and cur will be offered this quarter, this is a possible level
 						lastStep = step
@@ -135,9 +137,14 @@ class CourseScheduling:
 		# do not check len because we know it must be a topological order here
 		return output, startVertices
 
-	def _widthFunc(self, level, courseUnit):
+
+
+	def _widthFunc(self, level, levelNum, courseUnit):
 		total = courseUnit + sum(self.graph[c].units for c in level)
-		return total > self.unitPerQ
+		if self.startQ+levelNum in self.widthFuncTable:
+			return total > self.widthFuncTable[levelNum]
+		else:
+			return total > self.widthFuncTable["else"]
 
 	def _resetGraph(self):
 		self.graph.resetGraph()
