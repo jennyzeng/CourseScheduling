@@ -1,0 +1,571 @@
+\documentclass[letterpaper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+% \usepackage{setspace} % double spacing
+% \doublespacing
+\usepackage[nottoc]{tocbibind} %Adds "References" to the table of contents
+\usepackage[colorlinks=true,linktocpage=true, allcolors=blue]{hyperref}
+\usepackage[usenames, dvipsnames]{color}
+\usepackage{csquotes} %Display quotes
+\usepackage[linesnumbered,ruled]{algorithm2e} %Pesudocode
+\DontPrintSemicolon
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+\SetKwRepeat{Do}{do}{while}
+
+\usepackage{chngcntr}%ref for algorithm
+\counterwithout{algocf}{section}
+\counterwithout{algocf}{subsection}
+\renewcommand{\thealgocf}{\arabic{section}.\arabic{subsection}.\arabic{algocf}}
+
+\usepackage{amsthm} %write definition
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+ 
+\usepackage{array}% for table
+
+\usepackage{ amssymb } %math symbol
+
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{arrows.meta}
+
+%Document title, author and date (empty)
+\title{Course Scheduling Algorithm}
+\author{Adviser: David Eppstein\
+\and Student: Zhaohua Zeng}
+\date{\today}
+
+%Beginning of the document
+\begin{document}
+
+% introduction:
+%% project problem
+%% Why problem? significant problem
+%% Lack insight on ... my insight
+%% briefly introduce solution
+
+% Related works
+%% algorithms
+%% cant solve this problem because....
+
+
+% Proposed Method
+%% problem formulation and term definition
+%% step by step introduce my method
+%% Time and space complexity
+%%% lemma???
+
+% Experimental Result
+
+% Conclusion and future work
+
+
+
+
+
+
+\maketitle
+
+\tableofcontents
+\newpage
+\begin{abstract}
+	By modifying the Coffman-Graham algorithm and the Hu’s algorithm, we give a scheduling algorithm that can output a course study plan for college students in $O(|V|^2)$ time. 
+\end{abstract}
+\section{Introduction}
+% - Project Idea (put it in other places?)
+% - Data structures (somewhere else)
+%   - Course (vertex)
+%   - Graph
+% - Coffman-Graham Algorithm
+% - Hu's Algorithm
+% \subsection{Course Scheduling Problem} %Course scheduling problem
+Consider the problem of scheduling courses for next quarter. To graduate as soon as possible, what courses should a Computer Science student choose in the next few quarters? Currently, many students, especially freshmen and transfer students, would like to ask school academic counselors for advice before enrolling to courses of next quarter. Since the number of counselors is limited but many students would go to the office for help, getting suggestions becomes time consuming. 
+
+Although we find task scheduling algorithms giving a possible solution for the course scheduling problem, these algorithms do not consider some constraints that exist in this problem. Thus, we make modifications based on constraints after we adapt the labeling and scheduling phases in two task scheduling algorithms, the Coffman-Graham algorithm and Hu's algorithm. Our course scheduling algorithm can generate a reasonable schedule plan as a guidance for students. Using this algorithm, one can develop a tool that can help academic counselors shorten the time spent on arranging student schedules and provide accurate information. At the same time, students can check what series of courses they are required to take to satisfy some prerequisites and organize their study plans at ease.
+
+Our course scheduling algorithm can:
+\begin{enumerate}
+\item Make a course schedule for the entire undergraduate/graduate path, which can satisfy school/major requirements.
+\item Allow users to specify the maximum course units for a single quarter.
+\item Allow users to start scheduling process from the half-way. With the information about what courses users have taken, and the starting quarter of the schedule, the algorithm can generate a study plan for the next few quarters until all specified requirements are satisfied. 
+\item Allow users to avoid taking some courses.
+\end{enumerate}
+% We use Python to test the performance of the algorithm, and related code is hosted on a GitHub Repository~\footnote{\url{https://github.com/jennyzeng/CourseScheduling}}. 
+\section{Related Works}
+The Coffman-Graham algorithm and Hu's algorithm are related to precedence-constrained mulitprocessor scheduling problem, which is about minimizing the total makespan of the schedule. Each vertex of an acyclic digrah $G$ represents a task, which requires one unit of time to proceed on a single processor. Each edge $(u,v)$ in $G$ means task $u$ should be executed before task $v$. We can define each layer as the assignment in 1 unit of time, and the width of the layer is determined by a layer width $W$. Then minimizing the total makespan is equivalent to minimize the number of layers in the schedule. However, this problem is NP-complete, so both of these two algorithms suggest heuristic methods for scheduling~\cite{battista_chapter_1998}.
+
+There are some similarities between the precedence-constrained mulitprocessor scheduling problem and the course scheduling problem. First, we can view each task as a course in our problem, and each course also takes one unit of time to finish within one quarter. Then we can use quarter as a time unit. Similar to the precedence-constrained relationship between tasks, some courses have other courses as their prerequisites. It means students cannot take a course until they satisfy its prerequisites, so the course should be assigned in a layer later than its prerequisites' layers. Moreover, although there is no exact number of processors in course scheduling problem, we can use maximum units per quarter as a measurement instead. Since we want to minimize the total number of quarters in schedule, the goal of course scheduling problem is also minimizing makespan. Consequently, we can transform the precedence-constrained mulitprocessor scheduling problem to the course scheduling problem and use algorithms described below to solve it. 
+
+\subsection{Coffman-Graham Algorithm}
+The Coffman-Graham algorithm takes a reduced directed acyclic graph(DAG) $G$ and a positive integer $W$ as input. Then the basic Coffman-Graham layering algorithm has two phases: the first orders the vertices, and the second assigns vertices to layers~\cite{battista_chapter_1998}.
+
+Since the input DAG $G$ for the Coffman-Graham algorithm has no transitive edges, it is required to perform transitive reduction on the original input directed acyclic graph $H=(V,E)$ first. A directed graph $G$ is said to be a transitive reduction of the directed graph $H$ whenever the following two conditions are satisfied~\cite{aho_transitive_1972}: 
+\begin{enumerate}
+    \item there is a directed path from vertex $u$ to vertex $v$ in $G^t$ if and only if there is a directed path from $u$ to $v$ in $G$, and \label{aho_condition_1}
+    \item there is no graph with fewer arcs than $G^t$ satisfying condition~\ref{aho_condition_1}
+\end{enumerate}
+DAG's transitive reduction can be done in $O(M(|V|))$ time, where $M(n)$ is the time for computing the product of two $n \times n$ matrices~\cite{ aho_transitive_1972,tamassia_handbook_2007}.
+
+% \begin{algorithm}[H]
+% \DontPrintSemicolon
+%     \SetKwInOut{Input}{Input}
+%     \SetKwInOut{Output}{Output}
+%     \Input{reduced digraph $G=(V,E)$, and a positive integer $W$}
+%     \Output{layering of G of width at most $W$}
+%     Initially, all vertices are unlabeled.\;
+%     \For{$i=1$ \textbf{to} $|V|$}{\label{stage2}
+%         Choose an unlabeled vertex $v$, such that \{$\pi(v):(u,v)\in E$\} is minimized\;
+%         $\pi(v)=i$.\;
+%     }\label{stage5}
+%     $k=1; L_1 = \emptyset; U=\emptyset$.\;\label{stage6}
+%     \While{$U \neq V$}{
+%         Choose $u \in V-U$, such that every vertex in \{$v:(u,v)\in E$\}
+%         is in $U$, and $\pi(u)$ is maximized\;
+%         \uIf{$|L_k|<W$ \textbf{and} for every edge $(u,w)$, $w\in L_1 \cup L_2 \cup \dots L_k-1$}{
+%             add $u$ to $L_k$
+%         }
+%         \Else{
+%         $k=k+1, L_k=\{u\}$}
+%     }\label{stage13}
+%     \caption{Coffman-Graham-Layering}\label{alg:CG}
+% \end{algorithm}
+% \bigskip
+Leung\cite{leung_basic_2004} describes the Coffman-Graham Labeling algorithm: Let there be $k$ tasks without any immediate successors. Assign in any order the integers $1,2,\dots, k$ to these $k$ tasks. Let $T'$ be the set of tasks all of whose immediate successors have already been assigned a label. For each task $i$ in $T'$, let $N(i)$ denote the decreasing sequence of integers formed from the labels of its immediate successors. Assign the integer $t+1$ to the task $i$ such that $N(i)\leq N(k)$ for all tasks $k$ in $T'$. Repeat this process until every task has been assigned a label. \textcolor{red}{TODO: may paraphrase later}
+
+Scheduling phase of the Coffman-Graham algorithm is illustrated as follows~\cite{leung_basic_2004,coffman_optimal_1972}:
+Whenever a processor is free for assignment, assign that ready task with the highest label among all ready jobs to it. 
+
+Let $m$ be the number of processors, $\omega$ be the length of a schedule produced by the algorithm, and $\omega_0$ be the length of an optimal schedule, then $\omega/ \omega_0 \leq 2-2/m$~\cite{coffman_optimal_1972,lam_worst_1977}. 
+
+
+%also further explains  algorithm~\ref{alg:CG}. 
+
+
+
+
+
+% The labeling and scheduling process can be described as follows:
+% \begin{enumerate}
+% \item $G$ is a reduced directed acyclic graph, and $W$ is the maximum number of vertices in each level. 
+% \item Steps \ref{stage2} to \ref{stage5} describe the first phase. The $\pi(u)$ labels each vertex with a positive number. It labels each immediate successor $v$ of $u$ in a lexicographical order, if $v$ has not yet been labeled. It does not label $u$ until all immediate successors of $u$ have a label. This procedure constructs a topological ordering of $G$. Vertices at a higher level have higher labels than vertices at a lower level. When two vertices are at the same level, they are ordered according to labels of their immediate successors.
+% \item Steps \ref{stage6} to \ref{stage13} show the second phase. It selects the vertex $u$ that has the highest label among all the ready vertices. It assigns $u$ to a level $L_k$. The length of $L_k$ cannot excede $W$, and the highest possible level of any successors of $u$ is $L_{k-1}$. $L_k$ should also be as low as possible. 
+% \end{enumerate}
+
+\subsection{Hu's Algorithm}
+Given a fixed width $w$, Hu's algorithm can find a schedule for a finite number of tasks which all require unit time to complete in $O(n\log n)$ time~\cite{leung_basic_2004}. Hu's algorithm minimizes the total completion time for a set of tasks constrained by precedence tree constraints, and has an optimal lower bound~\cite{mchugh_hus_1984}.
+
+Similar to the Coffman-Graham algorithm, Hu's algorithm also has labeling and scheduling phases. However, they are differentiated by they way of labeling. In Hu's algorithm, the label of a task is a function of the \textit{level} of the task~\cite{huo_online_2005}. Let a final task be a task without any successors. Final tasks all receive a label $1$ at the beginning of the labelling process. Assume each task require 1 unit of time to finish, then a task $T_i$ is labelled with $\alpha(T_i)=x_i + 1$, in which $x_i$ is the length of the longest path from $T_i$ to the final task in graph~\cite{hu_parallel_1961}. Figure~\ref{fig:huAlg} by Hu gives an example of labeling process in a graph. For a node $T_i$ in the figure, the number that appears in $T_i$ is $T_i$'s label $\alpha(T_i)$.
+
+Scheduling phase is similar in Hu's algorithm as in the Coffman-Graham algorithm despite the fact that tasks can have same label in Hu's algorithm. Assume that we will schedule for $w$ processors, and each processor can only execute one task at a time, whenever a processor is free for assignment, assign the task with the largest label among all ready tasks to the processor. Repeat until all tasks are assigned. When some ready tasks have the same label, break the tie arbitrarily~\cite{leung_basic_2004}. In other words, it selects a ready task that has the longest distance to final task. We then assign it to the highest layer we currently have. If the number of tasks in this layer is $w$, it creates a new layer above this layer and assign the task to the new layer. 
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[font=\sffamily]
+% nodes
+\begin{scope}[every node/.style={circle,draw=blue!60, fill=gray!10, ultra thick, minimum size=7mm}]
+	\node(A) at (6,0) {1};
+	\node(B) at (2,2) {2};
+    \node(C) at (0,4) {3};
+    \node(D) at (2,4) {3};
+    \node(E) at (4,4) {3};
+    \node(F) at (2,6) {4};
+    \node(G) at (4,6) {4};
+    \node(H) at (6,2) {2};
+    \node(I) at (8,2) {2};
+    \node(J) at (10,2) {2};
+    \node(K) at (8,4) {3};
+    \node(L) at (10,4) {3};
+    \node(M) at (6,6) {4};
+\end{scope}
+\begin{scope}[thick, draw=black!60, decoration={
+    markings,
+    mark=at position 0.7 with {\arrow[scale=2,>=stealth]{>}}}
+    ] 
+\draw[postaction={decorate}] (B) -- (A);   
+\draw[postaction={decorate}] (C) -- (B); 
+\draw[postaction={decorate}] (D) -- (B); 
+\draw[postaction={decorate}] (E) -- (B); 
+\draw[postaction={decorate}] (F) -- (D); 
+\draw[postaction={decorate}] (F) -- (E); 
+\draw[postaction={decorate}] (G) -- (E); 
+\draw[postaction={decorate}] (G) -- (D); 
+\draw[postaction={decorate}] (G) -- (C); 
+\draw[postaction={decorate}] (H) -- (A); 
+\draw[postaction={decorate}] (I) -- (A); 
+\draw[postaction={decorate}] (J) -- (A); 
+\draw[postaction={decorate}] (K) -- (I); 
+\draw[postaction={decorate}] (L) -- (J); 
+\draw[postaction={decorate}] (M) -- (K); 
+\draw[postaction={decorate}] (M) -- (H); 
+\end{scope}
+\end{tikzpicture}
+\caption{labeling process in Hu's algorithm~\cite{hu_parallel_1961}}
+\label{fig:huAlg}
+\end{figure}
+\section{Proposed Method}
+\subsection{Problem Formulation and Term Definition}
+\subsubsection{Schedule}
+A schedule $L$ is represented as a list of layers. Each layer stands for a quarter in the actual schedule, and it holds a set of assigned courses. First layer $L_0$ in the schedule is the bottom layer.
+
+\subsubsection{Width Bound}
+$M$ is a table of width bound for different layers in schedule. The maximum width of layer $L_i$ is $M(L_i)$, which is the maximum total units of courses in it. We can also define a key called $others$ in $M$ such that if there is no specified width bound for a layer in $L$, its width bound is $M(others)$.
+
+$W$ is a table storing current width of layers. Every time when a course $v$ is assigned to a layer $L_i$, we update $W(L_i)=W(L_i)+v.Units$.
+\subsubsection{Upper Bound}
+Since we are not able to estimate the upper bound at the beginning, we specify an upper bound index $u$ for layers instead. 
+\subsubsection{Requirements table}
+Requirements $R$ contains a table of requirements. A requirement is in the following format:
+    \begin{displayquote}
+    $n$ courses in:\\
+    (Course1, Course2, Course3)\\
+    \textbf{AND}\\
+    $m$ courses in:\\
+    (Course4, Course5, Course6)
+    \end{displayquote}
+$n$ and $m$ is the number of courses required in the set of courses. Both the number of sets and the number of the courses in the set are not fixed.
+Let the name of a requirement be $k$, the index of the a set \textit{(Course1, Course2, Course3)} be $i$, and the number of courses required for this set be $n$. Then we get $R_k^i=n$. 
+
+
+
+
+\subsubsection{Course}
+Each course in our course scheduling problem represents a vertex in graph. A course $v$ contains the following information:
+\begin{itemize}
+    \item $v.Units$: Total units $v$ requires. If $v$ has a $4$ units lecture section, and a $1$ unit lab section, it requires $5$ units in total.
+    \item $v.QuarterCode$: In what quarters the department offers this course. There is a presumption in both the Coffman-Graham algorithm and Hu's algorithm that all tasks are available at any time in the schedule. However, a course may not be offered in every quarter and every year, which means that not every layer can hold this course. Therefore, knowing when a course will be offered is significant in scheduling phase.
+    
+    We stores quarter information for latest $2$ years, $6$ quarters in total for testing. The latest year is called \textit{odd year}, the the second latest year is \textit{even year}. Each quarter has a quarter code, if a course is offered in a quarter, we add this quarter code in quarters information. If year 2017 is the latest year, we have:
+    \begin{center}
+    \begin{tabular}{ |l|c| } 
+         \hline
+         quarter name & quarter code \\
+         \hline
+         2017 Fall & 0 \\ 
+         2017 Winter & 1 \\ 
+         2017 Spring & 2 \\ 
+         2016 Fall & 3 \\
+         2016 Winter & 4 \\
+         2016 Spring & 5 \\
+         \hline
+    \end{tabular}
+    \end{center}
+    Using quarter code can help matching layer index with a corresponding quarter using a mod operation. For example, with 0-indexing, if a layer has index equal to $8$, then we calculate $8 \bmod 6 = 2$, so the quarter code for this layer is $2$. 
+    \item $v.IsUpperOnly$: It denotes if $v$ is an upper only course. If it returns $true$, it means $v$ is an upper standing only course. Suppose there is an integer $U$ represents upper units and $U \geq 0$, then an upper standing course requires a student to achieve at least $U$ units before they can take it. 
+    
+    Thus, if $v.IsUpperOnly=true$, $v$ can only be assigned to a layer $L_i$ such that \[(\sum_{k=0}^{i-1} \sum u.Units \textrm{ for } u\in L_k) \geq U\]
+    
+    \item $v.Prerequisite$: The prerequisite of $v$ has the following input format:
+    \begin{displayquote}
+    Course1\\
+    \textbf{AND}\\
+    (Course2 \textbf{OR} Course3)\\
+    \textbf{AND}\\
+    (Course4 \textbf{OR} Course5 \textbf{OR} Course6)
+    \end{displayquote}
+    This format is in the conjunctive normal form (CNF), which is an AND of ORs, and can be represented as:
+    $$((Course1) \wedge (Course2 \vee Course3) \wedge (Course4 \vee Course5 \vee Course6) $$
+    It is noted that the number of courses in each OR is not fixed.
+    Based on this structure, we have two sequences $A_v$ and $B_v$ for a single course $v$. $A_v$ represents an AND sequence, which holds a list of OR sets. Each OR set consists of a set of prerequisite courses for $v$. The OR set with index $i$ in $v$'s AND sequence is $A_v^i$. A prerequisite course $u$ is in $A_v$ if it is in one of the OR set of $A_v$.
+    
+    $B_v$ in $B$ stores information about how $v$ is satisfied. In $B_v$, $B_v^i$ refers to the OR set $A_v^i$ in $A_v$. Initially, $B_v^i$ is null. If a course $u$ is assigned to the schedule, $u$ is in $A_v^i$, and $B_v^i$ is null, we set $B_v^i=u$, showing that OR set $A_v^i$ is satisfied by $u$. If and only if all OR sets in $A_v$ are satisfied, the AND sequence $A_v$ is fully satisfied, and the course's prerequisite is also fully satisfied. Then we call this course a ready course because it is ready to be assigned to the schedule. 
+    \item $v.Successors$: A set of courses. For each course $w$ in $v.Successors$, there exists $A_w^i \in A_w$ such that $v \in A_w^i$.  
+    \item $v.Requirements$: A set of requirements that $v$ can satisfy.
+    Each element in the set is represented as a tuple $(k,i)$ for $k$ is a requirement name and $i$ is the index of a set in $R_k$ such that $v\in R_k^i$. 
+    Having this information in $v$ can find its satisfying requirements in the requirement table in linear time time after $v$ is assigned. 
+    \item $v.CourseValue$: The number of requirements $v$ meets, that is the length of $v.Requirements$. 
+    \item $v.DependentIndex$: The largest layer index of $v$'s dependent schedule. Initially, $v.DependentIndex=0$.
+\end{itemize}
+% Information above is necessary for generating a schedule.
+\subsubsection{Graph}
+A graph for course scheduling is a collection of courses. A course $v$ has incoming edges from each course $u\in A_v$. Similarly, $v$ has outgoing edges to each course $w\in v.Successors$. Note  that edges can also be reversed to find longest path distance required in ~\ref{HuAlgorithm}. 
+
+We define graph to be $G=(V,E)$, a graph $G$ with $|V|$ courses and $|E|$ edges. $G$ is a directed acyclic graph. Suppose there is a cycle in $G$, and course $v$ is in the cycle, then $v$'s successor will become its prerequisite, and we can never assign $v$ to the schedule. Although it is not required to do transitive reduction on $G$, doing so can decrease $|E|$ of $G$. 
+
+
+
+
+% - AND/OR prerequisites structure
+
+% \subsection{Labeling}
+
+
+
+
+% Consequently, we are not able to get a topological ordering of courses in the graph. Instead, when we implement the Coffman-Graham algorithm, we use a queue structure to store those ready courses. Every time when a course is scheduled, for every immediate successor, if this assigned course can make its prerequisite fully satisfied, we push it into the queue. Because a course may satisfy many other courses, we then adapt the labeling of the Hu's algorithm. Rather than using a queue, we use a priority queue. courses in the queue will be ordered according to their label values, largest first. The way of calculating label values is illustrated at Section \ref{HuAlgorithm}.
+
+% The priority queue structure we used is based on a heap, so it takes time $O(|V|\log |V|)$ to construct for all vertices in graph $G$, and time $O(\log |V|)$ to remove a vertex from the queue. The course scheduling algorithm, in which every vertex would be selected, takes $O(|V|\log|V|)$ time to remove all vertices from the queue. 
+
+% - Time restriction (quarter)
+% - flexible width bound for different levels
+
+% \subsubsection{Time Constraint}\label{timeCounstraint}
+% There is a presumption in both the Coffman-Graham algorithm and Hu's algorithm that all tasks are available at any time in the schedule. However, courses may not be offered in every quarter in every year. For example, a course may only be available at spring 2017 quarter. Since each layer in schedule is a quarter, we should restrict layers that a course can be assigned to. Recall that we store quarter information in course, we can use a mod operation to decide the quarter a layer represents. Assume we have quarter information for 6 quarters, we can find the quarter of a layer by:
+% \[ layerQuarter = layerIndex \bmod 6\]
+
+% For example, For a layer with index equal to $8$, we get quarter code $2$, and will check if the course selected has quarter code $2$. If the course does not have this quarter code, we say this course is not offered at this layer.
+
+% \subsubsection{Width Bound}\label{widthBound}
+% % - Some other features such as "avoid" and starting from the half-way
+% The layer width $w$ in both the Coffman-Graham algorithm and Hu's algorithm are fixed, which means that the maximum number of vertices for every layer is always the same. Nevertheless, we expect to have different widths in different layers for flexibility. \\
+% We can provide a hash table storing width information. Each key in table refers to a layer in the schedule and the value is the maximum width of that layer. Moreover, based on the constraints we describe in ~\ref{timeCounstraint} and~\ref{widthBound}, we define a function called \textit{widthFunc} to decide if a layer is valid for a course. \\
+% \begin{algorithm}[H]
+% \Input{course $v$, layer $L_i$}
+% \Output{If layer $L_i$ is a valid layer for $C$}
+% \uIf{$v$ is not offered at $L$}{
+%     return False}
+% $total = 0$\;
+% \For{each course $u$ at layer $L_i$}{
+%     % \uIf{$V$ is $C$'s dependent}{
+%     %     return False}
+%     $total = total + u.units$}
+% return $total + u.units \le M(L_i)$\; 
+% \caption{widthFunc}\label{widthFunc}
+% \end{algorithm}
+% \bigskip
+% If a course is not offered at the quarter, or adding a course to this layer will exceed the maximum width, then the function returns this layer is invalid for the course. Suppose each course is weighted at least $1$ unit, Algorithm~\ref{widthFunc} takes time $O(w)$ for a layer with maximum width length $w$.
+
+% - Upper standing restriction
+% \subsubsection{Upper Standing Only Restriction}
+% Some courses have upper standing only restriction, so only a student with at least 90 units can take this course. Due to the flexible width bound for a student, and not all layers will be full at the end, we are not able to predict exactly at which layer the student obtains at least 90 units. Also, a layer is valid for a course only if it is above the upper standing bound layer. Therefore, we provide a range of indices of layers. For each index, we set the corresponding layer as the upper standing bound layer, and generate a schedule. We then check if this schedule is a valid schedule, in which every layer is valid,  in $O(|V|)$ time. We select the schedule that has the smallest total running time among all valid schedules. 
+
+%\subsubsection{Assignment Process}
+\subsection{Single Course Assignment}
+\textcolor{red}{This part needs modification later because I find another possible way to find the smallest valid layer using math in linear time -- need further discussion}
+
+For a course $v$, we define a layer $L_i$ with $W(L_i) + v.Units < M(L_i)$ and $(i \bmod 6)\in v.QuarterCode$ to be a valid layer of $v$. To simplify, we define two functions $Valid$ and $HasDependent$. $Valid(L_i,v)$ returns true if $L_i$ is a valid layer for $v$. $HasDependent(L_i,v)$ returns true if $i<v.DependentIndex$.
+
+In course scheduling algorithm, after a ready course $v$ is selected, if the highest layer is valid, it marks this layer to be a lowest valid layer. Otherwise, it creates new layers above the highest layer until the new layer is valid, and marks this new layer as the lowest valid layer. Then it starts to scan the schedule from the original second highest layer and renew the lowest valid layer. Whenever it finds a layer that contains any courses in $v.Prerequisite$ or it reaches the upper bound layer, it stops scanning and assigns $v$ to the lowest valid layer.
+
+Algorithm~\ref{alg:AssignCourse} below shows the scheduling process for a single course $v$. 
+% The schedule has at least one empty layer at the beginning of the process.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+
+\Input{graph $G=(V,E)$, course $v$, Schedule $L$, upperBound index $u$}
+\Output{the index of the layer where $v$ is assigned}
+step = $|L|-1$\;
+\uIf{$Valid(L_{step}, v)= false$ \textbf{or} $HasDependent(L_{step}, v)= true$
+}{
+    \Do{$Valid(L_i,v) = false$ \textbf{and} ($v.IsUpperOnly=false$ \textbf{or} $i<u$)}
+    {add new empty layer $L_i$ above current highest layer}
+    }
+lastStep = $|L| -1$ \;
+\While{$v$ is not assigned \textbf{and} ($v.IsUpperOnly=false$ \textbf{or} $step\geq u$)}{
+\uIf{$HasDependent(L_{step},v)=true$}{
+    add $v$ to $L_{lastStep}$\;
+    return\;
+    }
+\uElseIf{$Valid(L_{lastStep}, v) = true$}{
+    lastStep = step}
+    step = step -1\;
+}
+\uIf{$v$ is not assigned}{
+    assign $v$ to layer $L_{lastStep}$
+    }
+    return lastStep\;
+
+\caption{AssignCourse}\label{alg:AssignCourse}
+\end{algorithm}
+\bigskip
+In algorithm~\ref{alg:AssignCourse}, $step$ represents the current scanning layer index. With 0-indexing, $|L|-1$ is the highest layer index in schedule $L$. $lastStep$ represents the current lowest valid layer for course $v$. 
+
+To assign a single course, the algorithm checks at most $|L|$ layers in the schedule. Suppose each layer holds at least one course, then in the worst case, there is only one course for each layer, so$|L|\leq |V|$. The time complexity for  algorithm~\ref{alg:AssignCourse} is $O(|L|)=O(|V|)$. 
+
+
+% \subsection{School and Major Requirements}~\label{requirement}
+% To graduate on time, students have to meet the school and major requirements. These requirements have a similar structure to to AND/OR structure we described at subsection. It is not required for a student to take all courses from the list to satisfy the requirement. A requirement has the following format:
+% \begin{displayquote}
+% \begin{itemize}
+%     \item \textit{course1}
+%     \item \textit{course2}
+
+% \item and $N$ courses from
+%     \begin{itemize}
+%         \item \textit{course3}
+%         \item \textit{course4}
+%         \item \textit{course5}
+%     \end{itemize}
+% \end{itemize}
+% \end{displayquote}
+% Both \textit{course1} and \textit{course2} are required and \textit{course3, course4} and \textit{course5} can be optional. $N$ in the format states the number of courses required from the course list. If $N = 2$, we have select at least 2 courses from \textit{course3, course4} and \textit{course5}. We use a hash table to store this information. A course can satisfy multiple requirements. The key is the name of the requirement, and value is the courses required and the required count $N$. A requirement is satisfied only if $N=0$. A course also stores what requirements it satisfies, so we can refer to the corresponding requirements in time $O(1)$. Everytime when a course in the requirement list is selected in the scheduling phase, we check if it can satisfy any requirements, in which the count $N > 0$. We only assign this course if it satisfy at least one requirement. After we assign the course, we decrease $N$ by $1$ for all unsatisfied requirements. 
+
+
+
+\subsection{Implementation of Hu's Algorithm}\label{HuAlgorithm}
+% - Priority queue (was a queue in C-G algorithm)
+% - heuristic function
+% - How the label value of a course is calculated from the sink (DAG shortest path)
+
+Unlike the precedence-constrained mulitprocessors scheduling problem, in which each task is ready if all of its immediate predecessors are assigned into the schedule, our algorithm does not require all courses in the prerequisite to be scheduled. 
+
+Although the relationship between each courses is not a strict precedence-constrained relationship, inspired by Hu's algorithm, we can reverse the graph, and find a longest path from a course to another course without any successors. 
+
+In order to reverse the graph $G$, we define for each prerequisite course $u \in A_v$, we have an edge $(v,u)$ from $v$ to $u$, instead of from $u$ to $v$.
+Because we prefer to assign those courses that can meet more requirements first, we also use a heuristic function for labeling. Label of $v$, $\alpha(u) = \alpha(v)+u.CourseValue$. If $v$ does not have any successors, $\alpha(v)=v.CourseValue$. Because we view $v.CourseValue$ as the weight of edge $(v,u)$, we can use DAG shortest path algorithm with modifications to generate a topological ordering and find the longest paths from a course to another course without any successors. When we are looping through all courses in $G$, we can also remove any courses that do not satisfy any requirements.
+algorithm~\ref{alg:labeling} bellow illustrates this procedure. 
+
+\begin{algorithm}[H]
+\Input{graph $G$}
+\Output{labeled graph $G$}
+\For{each course $v \in G$}{
+    \uIf{$v.courseValue = 0$}{
+        $G.remove(v)$}
+    \uElseIf{$v.successors \neq \emptyset$ }{
+        $\alpha(v) = -\infty$}
+    \Else{$\alpha(v)= c.courseValue$}
+    }
+\For{each course $v\in G$ in topological ordering}{
+        \For{each $u \in A_v$}{
+        $\alpha(u) = max((\alpha(u)+v.courseValue), \alpha(u))$
+        }
+    }
+return $G$
+
+\caption{Labeling}\label{alg:labeling}
+
+\end{algorithm}
+\bigskip
+In algorithm~\ref{alg:labeling}, the first for loop takes $O(|V|)$ time to initialize labels for all vertices in $G$, and the second for loop takes $O(|V|+|E|)$ time to visit all vertices and edges in $G$ and correct label of each course. The total time required is $O(|V|+|E|)$.
+
+\subsection{Course Scheduling Algorithm}
+Due to the limitation of finding an upper bound without getting an actual schedule, we have to first input a range of upper bounds to the algorithm, and then generate $m-n+1$ schedules. After that, we check the validity of schedules and pick the best schedule that can minimize the length of schedule. Algorithms required for scheduling are presented below: 
+
+\begin{algorithm}[H]
+\Input{graph $G$, upper bounds range $[m,n]$, initial units $initUnit$, upper standing units $upperUnit$}
+\Output{best schedule $bestL$}
+Labeling($G$)\;
+bestL = Null\;
+\For{$u\gets m$ to $n$}{
+    L = CourseScheduling($G,u$)\;
+    totalUnit = $initUnit$\;
+    \uIf{$|L|<|bestL|$}{
+    \For{each layer $L_i\in L$}{
+        layerUnit = 0\;
+        \For{each course $v\in L_i$}{
+            \uIf{$v$ is upper only \textbf{and} totalUnit$<$upperUnit }{
+            reject schedule $L$}
+            layerUnit = layerUnit + $v$.units
+        }
+        totalUnit = totalUnit + layerUnit
+    }
+    
+    \uIf{$L$ is not rejected}{
+        $L = bestL$}
+        }
+}
+return bestL\;
+
+\caption{CourseScheduling}\label{alg:coursescheduling}
+\end{algorithm}
+\bigskip
+\begin{algorithm}[H]
+\Input{graph $G$, upper bound index $u$}
+\Output{Schedule $L$}
+Create priority queue $Q$ using course label as key\;
+Create schedule with an empty layer $L$\;
+\For{each $course v \in G$}{
+    \uIf{$v.successors = \emptyset$}{
+        Q.enqueue((v, v.label))\;}  
+}
+\While{$Q$ is not empty}{\label{alg:getSchedule:while}
+    current = Q.extractMax()\;
+    \uIf{current satisfies any requirements}{
+    assingnedIndex = AssignCourse($G, current, L, u$)\;
+    ExpandQueue($current, Q, assingnedIndex$)\;
+    }
+    \tcp{update requirement table with $current$}
+    \For{each $(k,i)\in v.Requirements$}{
+        \uIf{$R_k^i > 0$}{
+            $R_k^i= R_k^i-1$}
+        }
+}
+return $L$\;
+\caption{GetSchedule}\label{alg:getSchedule}
+\end{algorithm}
+\bigskip
+\begin{algorithm}[H]
+\Input{course $v$, priority queue $Q$, assignedIndex $index$}
+\For{each course $u \in v.successors$}{
+    allNotNull=true\;
+    \For{$i\gets 0$ to $|A_u|-1$}{
+        \uIf{ $B_u^i=Null$}{
+        \uIf{$v \in A_u^i$}{
+        $B_u^i = v$\;
+        $u.DependentIndex = max(u.DependentIndex, index) $
+        }
+        \Else{allNotNull = false\;}
+        }
+    }
+    \uIf{$allNotNull=true$}{
+    Q.enqueue((u, $\alpha(u)$))}
+}
+\caption{ExpandQueue}\label{alg:ExpandQueue}
+\end{algorithm}
+
+
+
+\bigskip
+
+algorithm~\ref{alg:getSchedule} presents how it generate a schedule with a specific upper bound $u$. After the course is assigned, algorithm~\ref{alg:ExpandQueue} visits each edge going out from the course $current$ to another course $u$ and updates $B_u$. If $u$ is ready, it inserts $u$ to the priority queue. The Priority queue $Q$ is implemented with a max-heap structure with course label as the key. Since each enqueue or dequeue operation takes $O(\log |V|)$ time and runs $O(|V|)$ times, the total time required on $Q$ is $O(|V|\log|V|)$. In the while loop, each time AssignCourse~\ref{alg:AssignCourse} takes $O(|V|)$ time to assign a course, and ExpandQueue~\ref{alg:ExpandQueue} visits all outgoing edges of the course. Therefore, it takes $(O(|V|^2+|E|)+O(|V|\log|V|)=O(|V|^2)$ time to get a schedule. 
+
+algorithm~\ref{alg:coursescheduling} shows how it get the best schedule within a range of upper bounds from layer index $m$ to $n$. The labeling phase in it takes $O(|V|+|E|)$ time. Time required for algorithm~\ref{alg:getSchedule} still dominates, so the total time is $O(|V|^2)$.
+
+\section{Experimental Result}
+% It is used to test the quality of our solution
+
+% - Change number of courses in graph
+% - Change specializations
+% - Change majors
+% - Change the bound range
+% - With or without Hu's algorithm 
+
+% Test for many times (possible, because using priority queue seems to let us get the same result instead a randomized one due to the structure of our graph)
+% \section{Time and Space Complexity}
+% Given the pesudocode, analyze the time complexity and space complexity of our problem
+At the beginning of the research, we implement algorithm using Python~\footnote{\url{https://github.com/jennyzeng/CourseScheduling}}. Later, we test the quality of our algorithm by simulating a course schedule for a student majoring in Computer Science and specializing in Intelligent Systems, some other specifications are:
+\begin{enumerate}
+    \item Besides major requirement, the student is also required to satisfy General Requirements.
+    \item The student can only take at most 12 units at the first quarter and at most 18 units for the rest of the quarter. 
+    \item The student has 0 default units at the beginning of assignment.
+    \item Upper bound range is $U=[0,10]$.
+    \item First quarter of schedule is 2016 fall quarter. 
+\end{enumerate}
+With data collected on UCI website~\footnote{\url{http://catalogue.uci.edu/} and \url{https://www.reg.uci.edu/perl/WebSoc}}, we get the following result:
+% \begin{table}[htbp]
+% \centering
+
+
+\begin{center}
+\begin{tabular}{|m{1cm}|m{2cm}|m{2cm}|m{2cm}|m{2cm}|m{2cm}|}
+\hline
+\textbf{Code} & \multicolumn{5}{c|}{\textbf{Courses}}                                                  \\ \hline
+0            & ICS 31  & MATH 2A        & ICS 6B      &                 &            \\ \hline
+1            & ICS 32  & MATH 2B        & ICS 51+51L      & ICS 6D      &            \\ \hline
+2            & ICS 33  & STATS 67       & MATH 3A         & WRTNG-LOW 1 &            \\ \hline
+3            & ICS 45C & CS 151    & CS 169     & HIST 40A     & ICS 90 \\ \hline
+4            & ICS 46  & CS 121    & CS 178     & HIST 40B     &            \\ \hline
+5            & HIST 40C & POLSCI 21A     & GEII-1          & GEIII-1         &            \\ \hline
+6            & CS 161 & CS 171    & GEIII-2         & GEVI-1          &            \\ \hline
+7            & CS 116 & CS 125    & CS 162     & CS 175     &            \\ \hline
+8            & CS 163 & CS 177    & GEVII-1         & GEVIII-1        &            \\ \hline
+9            & CS 113 & IN4MATX 43     & WRTNG-LOW 2 &                 &            \\ \hline
+10           & CS 164 & ICS 53+53L & ICS 139W    &                 &            \\ \hline
+\end{tabular}
+% \end{table}
+\end{center}
+In table above, Code column shows layer index. Code $0$ stands for the first layer (quarter). Cources columns presents the vertices (courses) assigned to a layer. The algorithm generates a schedule with 10 layers, equivalent to 3 years and 2 quarters. It prefers to assign major courses rather than general requirement courses first because they have a larger label value. Moreover, it states layer 5, the spring quarter of the second year, is the best upper bound for scheduling. 
+\section{Conclusion and Future work}
+Through examining two task scheduling algorithms, the Coffman-Graham algorithm and Hu's algorithm, we are able to develop our own scheduling algorithm that works for course scheduling in time $O(|E|+|V|\log|V|)$. Looking at the experimental result, the schedule we generate for a student is reasonable and valid based on the provided constraints. With this algorithm, programmers can develop an application to assist students and counselors to make a study plan. 
+
+However, it is noted that building such a schedule is still time consuming, and applying better data structures can possibly reduce the total running time. Furthermore, after adding many constraints for the algorithm, we can only test the quality of the schedule based on the experimental results. Although the result is workable for a Computer Science student, because we are not able to access the database for courses and student requirements at UCI, we cannot evaluate the quality of schedule thoroughly.
+
+
+\newpage
+\bibliographystyle{ieeetr}
+\bibliography{ref}
+\end{document}

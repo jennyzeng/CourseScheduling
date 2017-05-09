@@ -14,7 +14,7 @@ def loadData(major, specs, specsFilename, courseFilename, useTaken, takenFilenam
 	defaultUnits = 0
 	startQ = 0
 	if useTaken:
-		startQ, defaultUnits= DataLoading().loadTaken(graph, specsTable, takenFilename)
+		startQ, defaultUnits = DataLoading().loadTaken(graph, specsTable, takenFilename)
 	if useAvoid:
 		DataLoading().loadAvoid(graph, avoidFilename)
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
 			 "GEI", "GEII", "GEIII", "GEIV", "GEV", "GEVI","GEVII","GEVIII",
 		       "Lower-division",
 		       "Upper-division",
-		       "Algorithms",
+		       #"Algorithms",
 		       "Intelligent Systems"
 		       # "Visual Computing"
 		       #"Information"
