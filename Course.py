@@ -108,13 +108,13 @@ class Course:
 		if the prereq section is not yet satisfied, it will tag 'name' to be
 		the satisfied course and return True. else, return False
 		"""
-
+		isTagged = False
 		for i in range(len(self.prereq)):
 			if not self.prereqBool[i]:
 				if name in self.prereq[i]:
 					self.prereqBool[i] = name
-					return True
-		return False
+					isTagged = True
+		return isTagged
 
 	def prereqIsSatisfied(self):
 		return all(self.prereqBool)

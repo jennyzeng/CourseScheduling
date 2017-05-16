@@ -42,14 +42,14 @@ if __name__ == '__main__':
 			 "GEI", "GEII", "GEIII", "GEIV", "GEV", "GEVI","GEVII","GEVIII",
 		       "Lower-division",
 		       "Upper-division",
-		       #"Algorithms",
+		       # "Algorithms",
 		       "Intelligent Systems"
 		       # "Visual Computing"
 		       #"Information"
 		       #"Networked Systems"
 		       ],
 		specsFilename="info/test/specializations.txt",
-		courseFilename="info/test/fullcourses.txt",
+		courseFilename="info/test/fullcourses_new.txt",
 		useTaken=False,
 		takenFilename="info/test/taken.txt",
 		useAvoid=False,
@@ -57,7 +57,7 @@ if __name__ == '__main__':
 		widthFuncFilename="info/test/widthFunc.txt"
 	)
 	# scheduling
-	L, bestBound = CourseScheduling(graph, specsTable, startQ, 90-defaultUnits, widthFuncTable).findBestSchedule(10)
+	L, bestBound = CourseScheduling(graph, specsTable, startQ, 90-defaultUnits, widthFuncTable).findBestSchedule(20)
 	printResult(L, bestBound, startQ)
 
 

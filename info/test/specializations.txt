@@ -252,7 +252,7 @@ COMPSCI 179
 }
 ;
 Intelligent Systems
-all
+3
 {
 COMPSCI 171
 COMPSCI 175

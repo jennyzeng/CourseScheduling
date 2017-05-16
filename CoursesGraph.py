@@ -27,13 +27,13 @@ class CoursesGraph:
 		course = self.adjList[cname]
 		if course.courseValue:
 			return self.adjList[cname].courseValue
-		total = 0
-		for spec, num in course.satSpecs:
-			if specsTable[spec][num] != 0:
-				total -= 1
+		# total = 0
+		# for spec, num in course.satSpecs:
+		# 	if specsTable[spec][num] != 0:
+		# 		total -= 1
 
-		self.adjList[cname].courseValue = total
-		return total
+		self.adjList[cname].courseValue = -len(self.adjList[cname].satSpecs)
+		return self.adjList[cname].courseValue
 
 	def resetGraph(self):
 		for course in self.adjList.values():

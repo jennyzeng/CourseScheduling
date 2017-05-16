@@ -32,8 +32,8 @@ class WebSoc:
 			"Room": "",
 			"Submit": "Display Web Results"
 		}
-		self.quarterCode = {0: "2016-92", 1: "2017-03", 2: "2017-14",
-		                    3: "2015-92",4:"2016-03", 5:"2016-14"}
+		self.quarterCode = {0: "2017-92", 1: "2017-03", 2: "2017-14",
+		                    3: "2016-92",4:"2016-03", 5:"2016-14"}
 		self.reqURL = "https://www.reg.uci.edu/cob/prrqcgi?"
 		self.prereqInfo = {'action': 'view_all', 'term': 201703, 'dept': None}
 		self.depts = []
@@ -142,5 +142,5 @@ class WebSoc:
 
 if __name__ == "__main__":
 	websoc = WebSoc()
-	websoc.main(["I&C SCI", "COMPSCI","MATH","STATS", "IN4MATX","WRITING"], "fullcourses.txt")
+	websoc.main(["I&C SCI", "COMPSCI","MATH","STATS", "IN4MATX","WRITING"], "fullcourses_new.txt")
 	# websoc.main(["WRITING"], "fullcourses.txt")
