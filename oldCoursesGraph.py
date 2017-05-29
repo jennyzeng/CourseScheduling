@@ -23,17 +23,17 @@ class CoursesGraph:
 		for cname in self.adjList:
 			self.adjList[cname].isUpperOnly = False
 
-	def courseValue(self, cname, specsTable):
+	def courseValue(self, cname,specsTable,update=False):
 		course = self.adjList[cname]
-		if course.courseValue:
+		if not update and course.courseValue:
 			return self.adjList[cname].courseValue
-		# total = 0
-		# for spec, num in course.satSpecs:
-		# 	if specsTable[spec][num] != 0:
-		# 		total -= 1
-
-		self.adjList[cname].courseValue = -len(self.adjList[cname].satSpecs)
-		return self.adjList[cname].courseValue
+		total = 0
+		for spec, num in course.satSpecs:
+			if specsTable[spec][num] != 0:
+				total -= 1
+		self.adjList[cname].courseValue = total
+		# self.adjList[cname].courseValue = -len(self.adjList[cname].satSpecs)
+		return total
 
 	def resetGraph(self):
 		for course in self.adjList.values():
@@ -78,7 +78,7 @@ class CoursesGraph:
 
 	def updateSatisfies(self):
 		for name, course in self.adjList.items():
-			for preq in course.getPrereq():
+			for preq in course.getPrereqList():
 				for sat in preq:
 					if sat in self.adjList:
 						self[sat].addSatisfy(name)

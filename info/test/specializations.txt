@@ -1,4 +1,3 @@
-Computer Science
 University
 1
 {
@@ -94,6 +93,8 @@ MATH 2B
 I&CSCI 6B
 I&CSCI 6D
 STATS 67
+GEII -1
+GEII -2
 }
 1
 {

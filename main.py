@@ -1,12 +1,12 @@
-import CoursesGraph
+import oldCoursesGraph
 from scheduling import *
 from loadData import DataLoading
-from CoursesGraph import CoursesGraph
+from oldCoursesGraph import CoursesGraph
 
 def loadData(major, specs, specsFilename, courseFilename, useTaken, takenFilename, useAvoid, avoidFilename, widthFuncFilename):
 	specsCourse, specsTable = DataLoading().loadSpec(
 									major=major, specs=specs, filename=specsFilename)
-	graph = CoursesGraph()
+	graph = oldCoursesGraph()
 	DataLoading().loadCourses(graph, courseFilename)
 	graph.loadSpecs(specsCourse)
 	graph.updateSatisfies()
@@ -42,7 +42,7 @@ if __name__ == '__main__':
 			 "GEI", "GEII", "GEIII", "GEIV", "GEV", "GEVI","GEVII","GEVIII",
 		       "Lower-division",
 		       "Upper-division",
-		       # "Algorithms",
+		       #"Algorithms",
 		       "Intelligent Systems"
 		       # "Visual Computing"
 		       #"Information"
@@ -50,9 +50,9 @@ if __name__ == '__main__':
 		       ],
 		specsFilename="info/test/specializations.txt",
 		courseFilename="info/test/fullcourses_new.txt",
-		useTaken=False,
+		useTaken=True,
 		takenFilename="info/test/taken.txt",
-		useAvoid=False,
+		useAvoid=True,
 		avoidFilename="info/test/avoid.txt",
 		widthFuncFilename="info/test/widthFunc.txt"
 	)

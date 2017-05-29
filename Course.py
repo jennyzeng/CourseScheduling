@@ -1,124 +1,78 @@
-
-"""
-a course will have info about:
- - the name,
- - the quarter it will be offered,
- - its units, prerequisite,
- - if it is upperstanding only
- -  the courses that it may partially satisfy their prerequisites
-
-it is assumed that it will be offered at the same quarter for every year
-
-for weekday: 1-5: represents Mon-Fri
-for quarter: 1-3: represents Fall-Spring
-
-I should also show the AND/OR relationship in prereq
-cs 161 prereq:
-( I&C SCI 23 ( min grade = C ) OR CSE 23 ( min grade = C ) OR I&C SCI H23 ( min grade = C ) OR I&C SCI 46 ( min grade = C ) OR CSE 46 ( min grade = C ) )
-AND
-I&C SCI 6B
-AND
-I&C SCI 6D
-AND
-( MATH 2B OR AP CALCULUS BC ( min score = 4 ) )
-some courses, such as AP xxx, if they are not in the courses list, we can simply ignore it
-when we are scheduling
-
-
-"""
-
-
 class Course:
-	def __init__(self, name, isUpperOnly=None, units=None, quarters=None, prereq=None, satisfy=None):
-		self.name = name
-		self.quarters = quarters if quarters else {}
-		self.units = units if units else None
-		self.prereq = prereq if prereq else []
-		self.satisfy = satisfy if satisfy else set()
-		self.prereqBool = [None] * len(self.prereq)
-		self.satSpecs = set()
-		self.isUpperOnly = isUpperOnly
-		self.courseValue = None
+    # let self to be course v
 
-	def __str__(self):
-		return "name: {name}\n" \
-		       "units: {units}\n" \
-		       "quarters: {quar}\n" \
-		       "prereq: {prereq}\n" \
-		       "satisfyCourse: {sat}\n" \
-		       "satisfySpec:{spec}\n" \
-		       "upperOnly: {upp}".format(
-			name=self.name, units=self.units,
-			quar=self.quarters, prereq=self.prereq, sat=self.satisfy,
-			spec=self.satSpecs, upp=self.isUpperOnly)
+    def __init__(self, name: str, units: int,
+                 quarter_codes: set, prereq: list, is_upper_only=False):
+        self.name = name
+        self.units = units  # Total units v requires.
+        self.quarterCodes = quarter_codes  # In what quarters the department offers this course
+        self.isUpperOnly = is_upper_only  # true if it is an upper only course
+        self.prereq = prereq  # in conjunctive normal form, AND of ORs
+        self.prereqBool = [None] * len(prereq)  # bool info for satisfied prereqs
+        self.successors = set()  # a set of successors of course v
+        self.label = None  # label of a course
+        self.dependentIndex = 0  # The largest layer index of v's dependent schedule.
+        self.requirements = set()  # A set of requirements that v can satisfy.
 
+    @property
+    def courseValue(self):
+        return -len(self.requirements)
 
-	def delPrereq(self, cname, sat):
-		for i in range(len(self.prereq)):
-			if cname in self.prereq[i]:
-				if sat:
-					del self.prereq[i]
-					del self.prereqBool[i]
-				else:
-					self.prereq[i].remove(cname)
-				return True
-		return False
+    def __str__(self):
+        return " label={label}\n units={units}\n quarterCodes={qc}\n " \
+               "isUpperOnly={iuo}\n prereq={prereq}\n prereqBool={pb}\n" \
+               " successors={successors}\n dependentIndex={di}\n " \
+               "requirements={req}\n".format(label=self.label, units=self.units,
+                                             qc=self.quarterCodes, iuo=self.isUpperOnly,
+                                             prereq=self.prereq, pb=self.prereqBool,
+                                             successors=self.successors,
+                                             di=self.dependentIndex,
+                                             req=self.requirements)
 
-	def resetCourse(self):
-		self.prereqBool = [None] * len(self.prereq)
+    def prereq_list(self):
+        return [c for OR in self.prereq for c in OR]
 
-	def addQuarter(self, quarter):
-		self.quarters.update(quarter)
+    def unsatisfied_prereq(self):
+        """
+        :return: a set of (still require) courses in v's prereq
+        """
+        result = set()
+        for index, OR in enumerate(self.prereq):
+            if not self.prereqBool[index]:
+                result.union(OR)
+        return result
 
-	def addPrereq(self, prereq):
-		self.prereq.append(prereq)
+    def has_dependent(self, L_i):
+        """
+        check if layer with index L_i is a layer lower than v's dependent index
+        if true, L_i is not a valid layer for course v.
 
-	def addSatisfy(self, satisfy):
-		self.satisfy.add(satisfy)
+        :param L_i: layer index
+        :return: true if the layer is lower than v's dependent index
+        """
+        return L_i < self.dependentIndex
+    #
+    # def add_prereq(self, OR):
+    #     """
+    #     OR is in the following format:
+    #         {"I&C SCI 45C", "I&C SCI 45J"}
+    #
+    #     :param OR: add an OR set to the AND (self.prereq)
+    #
+    #     :return:
+    #     """
+    #     self.prereq.append(OR)
+    #     self.prereqBool.append(None)
 
-	def addSpec(self, spec, num):
-		self.satSpecs.add((spec, num))  # spec is a tuple
+    def tag_prereq(self, Bi, cid):
+        """
+        tag that course with id 'cid' satisfy v's prereq OR set with index Bi
 
-	def getSpecs(self):
-		return self.satSpecs
-
-	def getPrereq(self):
-		return self.prereq
-
-	def getNeighbors(self):
-		"""
-		:return: all its prereqs
-		"""
-
-		return [i for pset in self.prereq for i in pset]
-
-
-
-	def hasPrereq(self):
-		return len(self.prereq) != 0
-
-	def getSatisfy(self):
-		return self.satisfy
-
-	def isPrereq(self, name):
-		return name in self.prereqBool
-
-	def tagPrereq(self, name):
-		"""tag the prereq section that are satisfied by the course 'name'
-		if the prereq section is not yet satisfied, it will tag 'name' to be
-		the satisfied course and return True. else, return False
-		"""
-		isTagged = False
-		for i in range(len(self.prereq)):
-			if not self.prereqBool[i]:
-				if name in self.prereq[i]:
-					self.prereqBool[i] = name
-					isTagged = True
-		return isTagged
-
-	def prereqIsSatisfied(self):
-		return all(self.prereqBool)
-
-	def isValidQuarter(self, quarter):
-		return quarter % 6 in self.quarters
+        :param Bi: B^i, the index of the OR set in v.prereq
+        :param cid: the id of a course (the key for course in graph)
+        """
+        if Bi >= len(self.prereq) or cid not in self.prereq[Bi]:
+            raise Exception(
+                "Course {cid} not exists in OR set with index {Bi}".format(cid=cid, Bi=Bi))
+        self.prereqBool[Bi] = cid
 

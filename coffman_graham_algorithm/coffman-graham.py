@@ -19,7 +19,7 @@ def coffman_graham(graph, widthFunc):
 		cur = tp.popleft()
 		# if the highest level has dependents, it has to be assigned to a new level
 		for v in L[-1]:
-			if cur in graph.getNeighbors(v):
+			if cur in graph.getPrereqs(v):
 				L.append([cur])
 				assigned = True
 				break
@@ -36,7 +36,7 @@ def coffman_graham(graph, widthFunc):
 
 			if not widthFunc(L[step]):# only check those levels that are not full
 				for v in L[step]:# check if there are dependents in this level
-					if cur in graph.getNeighbors(v): # there are dependents in this level
+					if cur in graph.getPrereqs(v): # there are dependents in this level
 						L[lastStep].append(cur) # it cannot be assigned to a higher level
 						assigned = True
 						break

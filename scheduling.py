@@ -1,9 +1,7 @@
-from math import ceil
 import copy
-import heapq
 from collections import Counter, deque
-
-
+from priodict import priorityDictionary as priodict
+import sys
 class CourseScheduling:
     upperUnits = 90
 
@@ -21,11 +19,12 @@ class CourseScheduling:
     def findBestSchedule(self, boundRange):
         L = None
         bestBound = None
+        # label courses
+        self._labeling()
         for bound in range(0, boundRange):
             self._resetGraph()
             specsTable = copy.deepcopy(self.specsTable)
-            curSchedule = self.courseScheduling([[]], specsTable, bound)
-
+            curSchedule = self.courseScheduling( specsTable, bound)
             if self._isValidSchedule(curSchedule, specsTable):
                 if not L or len(L) > len(curSchedule):
                     L = curSchedule
@@ -33,13 +32,14 @@ class CourseScheduling:
         if not L: raise Exception("cannot get a valid schedule")
         return L, bestBound
 
-    def courseScheduling(self, L, specsTable, upperBound):
-        # label courses
-        self._labeling()
+    def courseScheduling(self, specsTable, upperBound):
         # initialize heap
-        Q = self._iniHeap(specsTable)
+        L = [[]]
+        curWidth=[0]
+        Q = self._initPQ() # add classes without prereqs into q
         while Q:
-            cur = heapq.heappop(Q)[1]
+            cur = Q.smallest()
+            del Q[cur]
             # check if satisfy specializations
             if not self._checkSpec(cur, specsTable):
                 continue
@@ -90,37 +90,28 @@ class CourseScheduling:
         # we only need the distance for now
         D, _ = self._DAGLongestPath()
         for v in D:
-            self.graph[v].courseValue = D[v] #+ len(self.graph[v].satSpecs)
+            self.graph[v].label = D[v] #+ len(self.graph[v].satSpecs)
 
-    def _relax(self, D, P, x, y, dis):
-        # since distance are all negative values, we get the
-        # shortest distance
-        if D[x] + dis < D[y]:
-            P[y] = x
-            D[y] = D[x] + dis
 
     def _DAGLongestPath(self):
         D = Counter()
-        P = {}
         topoOrder, startVertices = self._topologicalOrder()
         for cname in startVertices:
-            D[cname] = 0
+            D[cname] = self.graph.courseValue(cname,self.specsTable)
         for cname, course in self.graph.getCourses():
             if cname not in startVertices:
-                D[cname] = 999  # infinity
-            P[cname] = None
+                D[cname] = sys.maxsize # infinity
         for cname in topoOrder:
-            for w in self.graph[cname].getNeighbors():
+            for w in self.graph[cname].getPrereqs():
                 if w in self.graph:
-                    self._relax(D, P, cname, w,
-                                self.graph.courseValue(w, self.specsTable))
-        return D, P
+                    D[w] = min(D[w], D[cname]+self.graph.courseValue(w,self.specsTable))
+        return D
 
     def _topologicalOrder(self):
         C = deque()  # collection of vertices with no incoming edges
         D = Counter()
         for cname, course in self.graph.getCourses():
-            for w in self.graph[cname].getNeighbors():
+            for w in self.graph[cname].getPrereqs():
                 if w in self.graph:
                     D[w] += 1
         for cname, course in self.graph.getCourses():
@@ -131,8 +122,8 @@ class CourseScheduling:
         while C:
             cname = C.popleft()
             output.append(cname)
-            for w in self.graph[cname].getNeighbors():
-                if w in self.graph:
+            for w in self.graph[cname].getPrereqs():
+                if w in self.graph and w not in output:
                     D[w] -= 1
                     if D[w] == 0:
                         C.append(w)
@@ -162,39 +153,23 @@ class CourseScheduling:
             total += levelTotal
         return True
 
-    def _iniHeap(self, specsTable):
+    def _initPQ(self):
         """
         it will put all the courses without prereq to deque and return the deque
         """
-        Q = []
+        Q = priodict()
         for name, course in self.graph.getCourses():
-            courseValue = self.graph.courseValue(name, specsTable)
-            if not course.hasPrereq() and courseValue:
-                heapq.heappush(Q, (courseValue, name))
-
+            label = course.label
+            if not course.hasPrereq():
+                Q[name]= label
         return Q
 
     def _expandQueue(self, Q, course, specsTable):
         # add those courses that are satisfied into the Q
         satisfies = self.graph.tagSatisfy(course)
         for sat in satisfies:
-            courseValue = self.graph[sat].courseValue#(sat, specsTable)
-            if self.graph[sat].prereqIsSatisfied() and courseValue:
-                heapq.heappush(Q, (courseValue, sat))
-            # Q.append(sat)
-
-    def _lastAccpetedLevel(self, course, L, bound):
-        """
-        after expanding L, last level of L is accepted for course
-        """
-        # find highest avail quarter
-        if course.isUpperOnly:
-            while len(L) - 1 < bound:
-                L.append([])
-
-        while not course.isValidQuarter(len(L) + self.startQ - 1):
-            L.append([])
-        return L
+            if self.graph[sat].prereqIsSatisfied():
+                Q[sat] = self.graph[sat].label
 
     def _clearEmptyLevels(self, L):
         while L and not L[-1]:
@@ -211,13 +186,6 @@ class CourseScheduling:
                 specsTable[specName][index] -= 1
         return remain  # this course is not required if remain=False
 
-    def _highestLevelDependents(self, cur, L, bound):
-        # if the highest level has dependents, it has to be assigned to a new level
-        for v in L[-1]:
-            if self.graph.isPrereq(v, cur):
-                # find highest avail quarter
-                L.append([])
-                self._lastAccpetedLevel(self.graph[cur], L, bound)
-                L[-1].append(cur)
-                return True  # cur is assigned
-        return False
+    def AssignCourse(self, cur, L, U, curWidth):
+        step = len(L)-1
+        
