@@ -9,7 +9,7 @@ class Course:
         self.isUpperOnly = is_upper_only  # true if it is an upper only course
         self.prereq = prereq  # in conjunctive normal form, AND of ORs
         self.prereqBool = [None] * len(prereq)  # bool info for satisfied prereqs
-        self.successors = set()  # a set of successors of course v
+        self.successors = set()  # a set of (successor, successor's prereqBool index)
         self.label = None  # label of a course
         self.dependentIndex = 0  # The largest layer index of v's dependent schedule.
         self.requirements = set()  # A set of requirements that v can satisfy.

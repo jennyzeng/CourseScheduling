@@ -42,7 +42,7 @@ if __name__ == '__main__':
 		specsFilename="./test_spec.txt",
 		courseFilename="./testcourses.txt",
 		useTaken=False,
-		takenFilename="info/test/taken.txt",
+		takenFilename="info/test/taken.txt.txt",
 		useAvoid=False,
 		avoidFilename="info/test/avoid.txt",
 		widthFuncFilename="./test_widthFunc.txt"

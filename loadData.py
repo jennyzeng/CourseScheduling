@@ -17,14 +17,14 @@ class DataLoading:
         return wdict
 
     @staticmethod
-    def load_courses(G: CourseGraph, prereq_filename, show_upper=True):
+    def load_courses(prereq_filename, show_upper=True):
         """
         load courses in the file to the graph
         :param G: graph
         :param prereq_filename: filename
         :param show_upper: if true, config upper, otherwise all courses is not upper only.
         """
-
+        G = dict()
         with open(prereq_filename, 'r') as f:
             for line in f:
                 info = line.strip().split(";")
@@ -32,7 +32,7 @@ class DataLoading:
                 G["".join(info[0:2])] = Course(name=info[2], units=int(info[4]),
                                                quarter_codes=eval(info[5]), prereq=eval(info[3]),
                                                is_upper_only=eval(info[6])if show_upper else False)
-        G.update_successors()
+        return G
 
     @staticmethod
     def load_requirements(requirements, filename):
@@ -85,29 +85,32 @@ class DataLoading:
 
         return hashTable, R
 
-    # def load_taken(self, graph, specsTable, filename):
-    #     with open(filename) as f:
-    #         startQ = int(f.readline())
-    #         totalUnits = int(f.readline())
-    #         for cname in f.readlines():
-    #             cname = cname.replace(" ", "").strip()
-    #             course = graph[cname]
-    #             if course:
-    #                 for specName, index in course.getSpecs():
-    #                     if specsTable[specName][index] > 0:
-    #                         specsTable[specName][index] -= 1
-    #                 graph.delCourse(cname, True)
-    #     if totalUnits >= 90:
-    #         graph.delUpper()
-    #     return startQ, totalUnits
+    @staticmethod
+    def load_taken(filename):
+        """
+        taken.txt file is in the following format:
+        first line: start quarter code
+        second line: total units applied
+        then, each line on and after third line shows a cid that you've taken.txt
+        :return: start quater code, units, a set of cid
+        """
+        with open(filename) as f:
+            cids = set()
+            startQ = int(f.readline())
+            totalUnits = int(f.readline())
+            for cid in f.readlines():
+                cid = cid.strip()
+                cids.add(cid)
+        return startQ, totalUnits, cids
 
-    # def loadAvoid(self, graph, filename):
-    #     with open(filename) as f:
-    #         for cname in f.readlines():
-    #             cname = cname.replace(" ", "").strip()
-    #             course = graph[cname]
-    #             if course:
-    #                 graph.delCourse(cname, False)
+    @staticmethod
+    def load_avoid(filename):
+        avoids = set()
+        with open(filename) as f:
+            for cid in f.readlines():
+                cid = cid.strip()
+                avoids.add(cid)
+        return avoids
 
 
 if __name__ == "__main__":
