@@ -1,6 +1,7 @@
 import sys
 from collections import deque
 
+
 class CourseGraph:
     def __init__(self, G: dict()):
         """
@@ -31,10 +32,10 @@ class CourseGraph:
         update successors info for courses after adding courses into the graph
         """
         for k, v in self.G.items():
-            for OR in v.prereq:
+            for index, OR in enumerate(v.prereq):
                 for cid in OR:
                     if cid in self.G:
-                        self.G[cid].successors.add(k)
+                        self.G[cid].successors.add((k, index))
 
     def load_requirements(self, Rs: dict):
         """
@@ -102,5 +103,3 @@ class CourseGraph:
                 self.G[u].label = min((self.G[v].label + self.G[u].courseValue),
                                       self.G[u].label)
         return starts
-
-

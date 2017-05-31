@@ -50,19 +50,6 @@ class Course:
         :param L_i: layer index
         :return: true if the layer is lower than v's dependent index
         """
-        return L_i < self.dependentIndex
-    #
-    # def add_prereq(self, OR):
-    #     """
-    #     OR is in the following format:
-    #         {"I&C SCI 45C", "I&C SCI 45J"}
-    #
-    #     :param OR: add an OR set to the AND (self.prereq)
-    #
-    #     :return:
-    #     """
-    #     self.prereq.append(OR)
-    #     self.prereqBool.append(None)
 
     def tag_prereq(self, Bi, cid):
         """

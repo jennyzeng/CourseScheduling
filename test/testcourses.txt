@@ -1,13 +1,13 @@
 A;a;a;[{"Bb"},{"Hh","Ii","Jj"}];4;{0,1,2,3,4,5};False
-B;b;b;[{"Cc","Dd"},{"Ee"}];4;{1,2,4,5};False
+B;b;b;[{"Cc","Ee"},{"Dd"}];4;{1,2,4,5};False
 C;c;c;[{"Gg"}];3;{1,2,4,5};False
 D;d;d;[{"Ff"},{"Gg"}];4;{0,3};False
 E;e;e;[{"Ff","Gg"}];2;{0,1,3,4};False
 F;f;f;[];4;{0,3};False
 G;g;g;[];2;{0,3};False
 H;h;h;[{"Mm"}];2;{3};False
-I;i;i;[{"Kk"}];3;{2,5};True
-J;j;j;[{"Ll"}];5;{1,3};True
+I;i;i;[{"Kk"}];3;{1,2,4,5};True
+J;j;j;[{"Ll"}];5;{0,1,3,4};True
 K;k;k;[{"Mm"}];3;{0,3};False
-L;l;l;[];1;{0,3};False
+L;l;l;[];1;{0,1};False
 M;m;m;[];4;{0,1,2,3,4,5};False
