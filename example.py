@@ -37,9 +37,9 @@ if __name__ == '__main__':
     # construct Schedule with width func requirements
     L = cs.Schedule(widths=max_widths)
     # construct the scheduling class
-    cs = cs.CourseScheduling(start_q=startQ)
+    generator = cs.CourseScheduling(start_q=startQ)
     # get the best schedule when the upper bound range from 0 to 10, inclusive.
-    L, best_u, best_r = cs.get_best_schedule(graph, L, R, 0, 10)
+    L, best_u, best_r = generator.get_best_schedule(graph, L, R, 0, 10)
     print(L)
     print(best_u)
     print(R_detail)
