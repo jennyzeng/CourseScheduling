@@ -1,8 +1,10 @@
-from Graph import CourseGraph
-from Course import Course
-from Schedule import Schedule
-from priodict import priorityDictionary as priodict
 from copy import deepcopy
+
+from CourseScheduling.Graph import CourseGraph
+from CourseScheduling.Schedule import Schedule
+from CourseScheduling.priodict import priorityDictionary as priodict
+
+from CourseScheduling.Course import Course
 
 __author__ = "Jenny Zeng"
 __email__ = "jennyzengzzh@gmail.com"

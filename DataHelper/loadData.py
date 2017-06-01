@@ -2,8 +2,10 @@
 A helper class that load information from txt files and return in python format.
 Refer to the dir: 'info/test/' to see the example format.
 """
-from Course import Course
 import re
+
+from CourseScheduling.Course import Course
+
 __author__ = "Jenny Zeng"
 __email__ = "jennyzengzzh@gmail.com"
 

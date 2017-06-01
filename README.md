@@ -198,7 +198,7 @@ On the contrary, without labeling, it takes the user 3 years and 1 quarter.
     - [coffman-graham algorithm](coffman_graham_algorithm/coffman-grapham.py)
 
 9. Crawler
-    - [WebSoc and prerequistes Crawler (using beautiful soup and requests libraries)](WebSoc.py)
+    - [WebSoc and prerequistes Crawler (using beautiful soup and requests libraries)](DataHelper/WebSoc.py)
 
     - Right now it still cannot get those courses without prereqs automatically
     - For courses such as I&CSCI 51, have to manually modify it to be I&CSCI 51+51L, and change the units to be 6.

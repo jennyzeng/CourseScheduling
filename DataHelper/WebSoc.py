@@ -1,5 +1,5 @@
 """
-a crawler that craw course information on UCI website
+a crawler that crawl course information on UCI website
 """
 from bs4 import BeautifulSoup
 import requests
@@ -39,7 +39,7 @@ class WebSoc:
             "Submit": "Display Web Results"
         }
         self.quarterCode = {0: "2017-92", 1: "2016-03", 2: "2016-14",
-                            3: "2016-92", 4: "2017-03", 5: "2017-03"}
+                            3: "2016-92", 4: "2017-03", 5: "2017-14"}
         self.reqURL = "https://www.reg.uci.edu/cob/prrqcgi?"
         self.prereqInfo = {'action': 'view_all', 'term': 201792, 'dept': None}
         self.depts = []
@@ -147,4 +147,3 @@ class WebSoc:
 if __name__ == "__main__":
     websoc = WebSoc()
     websoc.main(["I&C SCI", "COMPSCI", "MATH", "STATS", "IN4MATX", "WRITING"], "fullcourses_new.txt")
-    # websoc.main(["WRITING"], "fullcourses.txt")

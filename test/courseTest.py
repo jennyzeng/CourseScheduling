@@ -1,7 +1,8 @@
 import oldCoursesGraph
 from scheduling import *
-from loadData import DataLoading
-from oldCoursesGraph import CoursesGraph
+
+from DataHelper.loadData import DataLoading
+
 
 def loadData(major, specs, specsFilename, courseFilename, useTaken, takenFilename, useAvoid, avoidFilename, widthFuncFilename):
 	specsCourse, specsTable = DataLoading().loadSpec(
