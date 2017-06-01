@@ -16,7 +16,7 @@ if __name__ == '__main__':
     avoid = DataLoading.load_avoid(filename="info/test/avoid.txt")
     # load graph, config if user is upper standing
     G = DataLoading.load_courses(prereq_filename="info/test/fullcourses_new.txt",
-                                 show_upper=cs.is_upper_standing(0, upper_units))
+                                 show_upper=cs.is_upper_standing(applied_units, upper_units))
     # load requirement sheet
     R_detail, R = DataLoading.load_requirements(
         requirements=["University", "GEI", "GEII", "GEIII", "GEIV",
