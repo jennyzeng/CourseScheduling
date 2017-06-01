@@ -115,7 +115,10 @@ class CourseScheduling:
         :return: True if v satisfy any requirements in R.
         """
         for name, index in v.requirements:
-            return R[name][index] > 0
+            if R[name][index] > 0:
+                return True
+
+        return False
 
     def _init_priodict(self, G: CourseGraph):
         """

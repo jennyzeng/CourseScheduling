@@ -8,7 +8,10 @@ class CourseGraph:
         :param G: a dict object representing the graph for courses
         :param r_detail: a **detail** requirement table. It is required.
                 format: {r_name: [set1, set2,...]}
+        :param R: a requirements table counting the number of courses required for
+                each requirements
         :param avoid: a set of cids
+        :param taken: a set of cids
         """
         self.G = G
         self.update_successors()
@@ -53,6 +56,10 @@ class CourseGraph:
         del self.G[key]
 
     def labeling(self):
+        """
+        label courses according to their longest distance to the sink
+        ( to the courses without any successors)
+        """
         for cid, course in list(self.G.items()):
             if course.courseValue == 0:
                 del self.G[cid]
@@ -71,6 +78,11 @@ class CourseGraph:
         return starts
 
     def update_taken(self, cids):
+        """
+        update the taken information. remove courses in cids from the graph, and
+        tag the prereq of those courses' successors.
+        :param cids: a list of courses one've taken
+        """
         for cid in cids:
             if cid in self.G:
                 for child, index in self.G[cid].successors:

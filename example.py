@@ -23,7 +23,7 @@ def update_requirements(R_detail, R, taken):
 
 if __name__ == '__main__':
     # load taken info
-    startQ, applied_units, taken = DataLoading.load_taken(filename="info/test/taken.txt")
+    startQ, applied_units, taken = DataLoading.load_taken(filename="info/test/taken2.txt")
     # config upper standing units
     upper_units = 90
     # load avoid info
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     R_detail, R = DataLoading.load_requirements(
         requirements=["University", "GEI", "GEII", "GEIII", "GEIV",
                       "GEV", "GEVI", "GEVII", "GEVIII", "CS-Lower-division", "CS-Upper-division",
-                       "Algorithms", "Intelligent Systems"],
+                      "Algorithms", "Intelligent Systems"],
         filename="info/test/specializations.txt")
 
     # update requirement table based on the taken information
@@ -49,11 +49,11 @@ if __name__ == '__main__':
 
     # construct Schedule with width func requirements
     L = Schedule(widths=max_widths)
-
+    # construct the scheduling class
     cs = CourseScheduling(start_q=startQ)
+    # get the best schedule when the upper bound range from 0 to 10, inclusive.
     L, best_u, best_r = cs.get_best_schedule(graph, L, R, 0, 10)
     print(L)
     print(best_u)
     print(R_detail)
     print(best_r)
-    # print(graph)

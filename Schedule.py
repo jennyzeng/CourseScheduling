@@ -18,11 +18,18 @@ class Schedule:
         return output
 
     def clear_empty(self):
+        """
+        clear empty layers at tops until the top layer is a non-empty layer
+        :return:
+        """
         while (not self.L[-1]) and (not self.curWidths[-1]):
             self.L.pop()
             self.curWidths.pop()
 
     def add_layer(self):
+        """
+        add a empty layer above the top layer, and mark its curWidth to be 0
+        """
         self.L.append([])
         self.curWidths.append(0)
 
