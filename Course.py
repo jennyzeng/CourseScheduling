@@ -11,7 +11,7 @@ class Course:
         self.prereqBool = [None] * len(prereq)  # bool info for satisfied prereqs
         self.successors = set()  # a set of (successor, successor's prereqBool index)
         self.label = None  # label of a course
-        self.dependentIndex = 0  # The largest layer index of v's dependent schedule.
+        self.dependentIndex = -1  # The largest layer index of v's dependent schedule.default use -1 to note None
         self.requirements = set()  # A set of requirements that v can satisfy.
 
     @property
@@ -32,6 +32,9 @@ class Course:
     def prereq_list(self):
         return [c for OR in self.prereq for c in OR]
 
+    def prereq_is_satisfied(self):
+        return all(self.prereqBool)
+
     def unsatisfied_prereq(self):
         """
         :return: a set of (still require) courses in v's prereq
@@ -39,7 +42,7 @@ class Course:
         result = set()
         for index, OR in enumerate(self.prereq):
             if not self.prereqBool[index]:
-                result.union(OR)
+                result = result.union(OR)
         return result
 
     def has_dependent(self, L_i):
@@ -50,6 +53,7 @@ class Course:
         :param L_i: layer index
         :return: true if the layer is lower than v's dependent index
         """
+        return self.dependentIndex==None or self.dependentIndex >= L_i
 
     def tag_prereq(self, Bi, cid):
         """

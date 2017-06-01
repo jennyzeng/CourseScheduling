@@ -6,8 +6,9 @@ from copy import deepcopy
 
 
 class CourseScheduling:
-    def __init__(self, total_quarter_codes=6):
+    def __init__(self, start_q=0, total_quarter_codes=6):
         self.total_quarter_codes = total_quarter_codes
+        self.start_q = start_q
 
     def get_best_schedule(self, G: CourseGraph, L: Schedule, R: dict, from_u: int, to_u: int):
         """
@@ -49,18 +50,18 @@ class CourseScheduling:
             current = PQ.smallest()
             del PQ[current]
             cur_course = G[current]
-            if self._course_satisfy_any_requirements(cur_course, R):  # do not assign this course
+            if self._course_satisfy_any_requirements(cur_course, R):  # assign this course
                 assigned_index = self.find_course_assign_index(cur_course, L, u)
                 L.add_course(assigned_index, current, cur_course.units)
                 self._expand_queue(G, current, PQ, assigned_index)
                 self.tag_requirement(R, cur_course)
-        if not self._violates_upper(G, L, u):
-            L.clear_empty()
+        if not self._violates_upper(G, R, L, u):
+            # L.clear_empty()
             return L
         else:
             return None
 
-    def _violates_upper(self, G: CourseGraph, L: Schedule, u: int):
+    def _violates_upper(self, G: CourseGraph, R, L: Schedule, u: int):
         """
         :param G: CourseGraph
         :param L: Schedule
@@ -69,7 +70,7 @@ class CourseScheduling:
         """
         # first check R is all 0
         # if any([any(i) for i in R.values()]):
-        #     return False
+        #     return True
         if u > len(L): return True
         # check if a upper only class is in lower division
         for clist in L.L[:u]:
@@ -97,12 +98,14 @@ class CourseScheduling:
         :param assigned_index: where cid is assigned in L.
         """
         for child, OR_index in G[cid].successors:
+            if child not in G:
+                continue
             child_course = G[child]
-            if not G[child].prereqBool[OR_index]:
-                child_course.prereqBool[OR_index] = cid
+            if not child_course.prereqBool[OR_index]:
+                child_course.tag_prereq(OR_index, cid)
                 child_course.dependentIndex = max(assigned_index, G[child].dependentIndex)
 
-            if all(child_course.prereqBool):
+            if child_course.prereq_is_satisfied():
                 PQ[child] = child_course.label
 
     def _course_satisfy_any_requirements(self, v: Course, R):
@@ -112,9 +115,7 @@ class CourseScheduling:
         :return: True if v satisfy any requirements in R.
         """
         for name, index in v.requirements:
-            if R[name][index] > 0:
-                return True
-        return False
+            return R[name][index] > 0
 
     def _init_priodict(self, G: CourseGraph):
         """
@@ -124,7 +125,7 @@ class CourseScheduling:
         """
         PQ = priodict()
         for cid, course in G.items():
-            if not course.prereq_list():  # course has no prereq
+            if not course.unsatisfied_prereq():  # course has no prereq
                 PQ[cid] = course.label
         return PQ
 
@@ -137,15 +138,15 @@ class CourseScheduling:
         :return: the index of the layer where v will be assigned
         """
         step = len(L) - 1
+        i = step
         if (not self._valid(L, step, v)) or v.has_dependent(step):
-            L.add_layer()
-            i = step + 1
+            i += 1
             while not self._valid(L, i, v) and (not v.isUpperOnly or i >= u):
                 # add new empty layer L_i above current highest layer
-                L.add_layer()
+                # L.add_layer()
                 i += 1
 
-        lastStep = len(L) - 1
+        lastStep = i
         step -= 1
         while (v.isUpperOnly and step >= u) or (not v.isUpperOnly and step >= 0):
             if v.has_dependent(step):
@@ -167,5 +168,4 @@ class CourseScheduling:
         :param v:  course
         :return:   true if valid
         """
-        return L.layer_is_full(i, v.units) and \
-               (i % self.total_quarter_codes) in v.quarterCodes
+        return (not L.layer_is_full(i, v.units)) and ((i + self.start_q) % self.total_quarter_codes) in v.quarterCodes

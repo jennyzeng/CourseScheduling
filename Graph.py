@@ -3,7 +3,7 @@ from collections import deque
 
 
 class CourseGraph:
-    def __init__(self, G: dict(), r_detail: dict(), avoid=None, taken=None):
+    def __init__(self, G: dict, r_detail: dict,R:dict, avoid=None, taken=None):
         """
         :param G: a dict object representing the graph for courses
         :param r_detail: a **detail** requirement table. It is required.
@@ -11,13 +11,14 @@ class CourseGraph:
         :param avoid: a set of cids
         """
         self.G = G
-        self.update_requirements(r_detail)
+        self.update_successors()
         if avoid:
-            self.add_void(avoid)
+            self.add_avoid(avoid)
         if taken:
             self.update_taken(taken)
 
-        self.update_successors()
+        self.update_requirements(r_detail, R)
+
         # labeling is done here because we know the requirements
         self.labeling()
 
@@ -33,7 +34,7 @@ class CourseGraph:
     def __setitem__(self, key, value):
         self.G[key] = value
 
-    def add_void(self, cids: set):
+    def add_avoid(self, cids: set):
         """
         :param cids: a list of cid, showing the courses you want to avoid
         :return:
@@ -52,18 +53,21 @@ class CourseGraph:
         del self.G[key]
 
     def labeling(self):
-        for cid, course in self.G.items():
+        for cid, course in list(self.G.items()):
             if course.courseValue == 0:
                 del self.G[cid]
-            elif course.successors:
-                course.label = sys.maxsize
             else:
                 course.label = course.courseValue
+
         topological_order, starts = self._topological_order()
         for v in topological_order:
             for u in self.G[v].prereq_list():
-                self.G[u].label = min((self.G[v].label + self.G[u].courseValue),
-                                      self.G[u].label)
+                if u in self.G:
+                    self.G[u].label = min((self.G[v].label + self.G[u].courseValue),
+                                          self.G[u].label)
+        for cid, course in list(self.G.items()):
+            if course.label >= 0:
+                del self.G[cid]
         return starts
 
     def update_taken(self, cids):
@@ -73,7 +77,6 @@ class CourseGraph:
                     if child in self.G:
                         self.G[child].tag_prereq(index, cid)
                 del self.G[cid]
-
 
     def update_successors(self):
         """
@@ -85,18 +88,20 @@ class CourseGraph:
                     if cid in self.G:
                         self.G[cid].successors.add((k, index))
 
-    def update_requirements(self, Rs: dict):
+    def update_requirements(self, R_detail:dict, R: dict):
         """
         add a dict of requirements into the courses. will not remove the requirements already exist in the graph
         note: after update requirements, one should update the labels to enable the change
 
         :param Rs: a set of requirements
         """
-        for requirement, AND in Rs.items():
+        for requirement, AND in R_detail.items():
             for index, OR in enumerate(AND):
-                for cid in OR:
-                    if cid in self.G:
-                        self.G[cid].requirements.add((requirement, index))
+                if R[requirement][index]:
+                    for cid in OR:
+                        if cid in self.G:
+                            self.G[cid].requirements.add((requirement, index))
+
 
     def _topological_order(self):
         """

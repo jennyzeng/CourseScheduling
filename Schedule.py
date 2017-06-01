@@ -10,10 +10,12 @@ class Schedule:
         return len(self.L)
 
     def __str__(self):
-        return "schedule: \n {s} \n curWidth: {curw} \n maxwidth:{mw} \n".format(s=self.L, curw=self.curWidths,
-                                                                                 mw=self.widths)
-
-
+        output = ""
+        for index, layer in enumerate(self.L):
+            output += "\nlayer: {index}, with width {curw} and max {wmax}\n".format(
+                index=index, curw=self.curWidths[index], wmax=self.max_width(index))
+            output += "; ".join([str(cid) for cid in layer]) +"\n"
+        return output
 
     def clear_empty(self):
         while (not self.L[-1]) and (not self.curWidths[-1]):
@@ -31,6 +33,8 @@ class Schedule:
         :param c_units: course units
         :return: None
         """
+        while i >= len(self.L):
+            self.add_layer()
         self.L[i].append(cid)
         self.curWidths[i] += c_units
 
@@ -51,4 +55,5 @@ class Schedule:
         :return: true if adding this course would make L_i exceed
                 its maximum width
         """
-        return self.curWidths[i] + c_units <= self.max_width(i)
+
+        return (i < len(self.L)) and (self.curWidths[i] + c_units > self.max_width(i))

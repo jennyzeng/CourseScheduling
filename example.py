@@ -14,43 +14,46 @@ def is_upper_standing(applied_units, upper_units):
 def update_requirements(R_detail, R, taken):
     for rid, rlist in R_detail.items():
         for index, rset in enumerate(rlist):
-            for cid in rset:
+            for cid in set(rset):
                 if cid in taken:
                     R[rid][index] = max(R[rid][index] - 1, 0)
-
+                    R_detail[rid][index].remove(cid)
     return R_detail, R
 
 
 if __name__ == '__main__':
     # load taken info
-    startQ, applied_units, taken = DataLoading.load_taken(filename="test/taken.txt")
+    startQ, applied_units, taken = DataLoading.load_taken(filename="info/test/taken.txt")
     # config upper standing units
-    upper_units = 5
+    upper_units = 90
     # load avoid info
-    avoid = DataLoading.load_avoid(filename="test/avoid.txt")
+    avoid = DataLoading.load_avoid(filename="info/test/avoid.txt")
     # load graph, config if user is upper standing
-    G = DataLoading.load_courses(prereq_filename="test/testcourses.txt",
-                                 show_upper=is_upper_standing(applied_units, upper_units))
+    G = DataLoading.load_courses(prereq_filename="info/test/fullcourses_new.txt",
+                                 show_upper=is_upper_standing(0, upper_units))
     # load requirement sheet
     R_detail, R = DataLoading.load_requirements(
-        requirements=["firstReq", "secondReq"],
-        filename="test/test_spec.txt")
+        requirements=["University", "GEI", "GEII", "GEIII", "GEIV",
+                      "GEV", "GEVI", "GEVII", "GEVIII", "CS-Lower-division", "CS-Upper-division",
+                       "Algorithms", "Intelligent Systems"],
+        filename="info/test/specializations.txt")
 
     # update requirement table based on the taken information
     update_requirements(R_detail, R, taken)
 
     # load max width for each quarter
-    max_widths = DataLoading.load_width_func_table("test/test_widthFunc.txt")
+    max_widths = DataLoading.load_width_func_table("info/test/widthFunc.txt")
 
     # construct CourseGraph. graph is labeled after init
-    graph = CourseGraph(G, r_detail=R_detail, avoid=avoid)
+    graph = CourseGraph(G, r_detail=R_detail, R=R, avoid=avoid, taken=taken)
 
     # construct Schedule with width func requirements
     L = Schedule(widths=max_widths)
 
-    cs = CourseScheduling()
-    L, best_u, best_r = cs.get_best_schedule(graph, L, R, 0, 3)
+    cs = CourseScheduling(start_q=startQ)
+    L, best_u, best_r = cs.get_best_schedule(graph, L, R, 0, 10)
     print(L)
     print(best_u)
+    print(R_detail)
     print(best_r)
     # print(graph)
