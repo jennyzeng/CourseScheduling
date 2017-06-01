@@ -6,6 +6,9 @@ from Graph import CourseGraph
 from Schedule import Schedule
 from CourseScheduling import CourseScheduling
 
+__author__ = "Jenny Zeng"
+__email__ = "jennyzengzzh@gmail.com"
+
 
 def is_upper_standing(applied_units, upper_units):
     return applied_units > upper_units

@@ -1,7 +1,13 @@
+"""
+a crawler that craw course information on UCI website
+"""
 from bs4 import BeautifulSoup
 import requests
 import urllib.parse
 import re
+
+__author__ = "Jenny Zeng"
+__email__ = "jennyzengzzh@gmail.com"
 
 
 class WebSoc:

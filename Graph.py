@@ -1,6 +1,10 @@
-import sys
+"""
+The course graph for scheduling. It uses a basic adjacency structure for graph
+"""
 from collections import deque
 
+__author__ = "Jenny Zeng"
+__email__ = "jennyzengzzh@gmail.com"
 
 class CourseGraph:
     def __init__(self, G: dict, r_detail: dict,R:dict, avoid=None, taken=None):

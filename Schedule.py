@@ -1,3 +1,7 @@
+__author__ = "Jenny Zeng"
+__email__ = "jennyzengzzh@gmail.com"
+
+
 class Schedule:
     """a schedule"""
 
@@ -14,7 +18,7 @@ class Schedule:
         for index, layer in enumerate(self.L):
             output += "\nlayer: {index}, with width {curw} and max {wmax}\n".format(
                 index=index, curw=self.curWidths[index], wmax=self.max_width(index))
-            output += "; ".join([str(cid) for cid in layer]) +"\n"
+            output += "; ".join([str(cid) for cid in layer]) + "\n"
         return output
 
     def clear_empty(self):

@@ -16,6 +16,10 @@ class Course:
 
     @property
     def courseValue(self):
+        """
+        calculate the value of v based on the number of requirements v can satisfy
+        :return: the value of a course
+        """
         return -len(self.requirements)
 
     def __str__(self):
@@ -30,9 +34,15 @@ class Course:
                                              req=self.requirements)
 
     def prereq_list(self):
+        """
+        :return: a list of v's prerequisites. (without the AND/OR form)
+        """
         return [c for OR in self.prereq for c in OR]
 
     def prereq_is_satisfied(self):
+        """
+        :return: true if all prereq of v are satisfied.
+        """
         return all(self.prereqBool)
 
     def unsatisfied_prereq(self):

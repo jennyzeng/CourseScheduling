@@ -4,6 +4,9 @@ from Schedule import Schedule
 from priodict import priorityDictionary as priodict
 from copy import deepcopy
 
+__author__ = "Jenny Zeng"
+__email__ = "jennyzengzzh@gmail.com"
+
 
 class CourseScheduling:
     def __init__(self, start_q=0, total_quarter_codes=6):
