@@ -39,7 +39,8 @@ class Scheduling:
             L_temp = deepcopy(L)
             R_temp = deepcopy(R)
             schedule = self.get_single_schedule(G_temp, L_temp, R_temp, u)
-            if schedule and (not best_L or len(schedule) > len(best_L)):
+            if schedule and (not best_L or len(schedule) > len(best_L)) \
+                    and not self._violates_upper(G, L, u):
                 best_L = schedule
                 best_u = u
                 best_r = R_temp
@@ -54,7 +55,7 @@ class Scheduling:
         :param L: empty schedule
         :param u: upper bound layer index
         :param R: requirements table
-        :return: schedule if schedule is valid, else none
+        :return: return the schedule without checking if it violates the upper standing
         """
         PQ = self._init_priodict(G)
         while PQ:
@@ -66,11 +67,7 @@ class Scheduling:
                 L.add_course(assigned_index, current, cur_course.units)
                 self._expand_queue(G, current, PQ, assigned_index)
                 self.tag_requirement(R, cur_course)
-        if not self._violates_upper(G, R, L, u):
-            # L.clear_empty()
-            return L
-        else:
-            return None
+        return L
 
     def find_course_assign_index(self, v: Course, L: Schedule, u: int):
         """
@@ -100,7 +97,7 @@ class Scheduling:
 
         return lastStep
 
-    def _violates_upper(self, G: CourseGraph, R, L: Schedule, u: int):
+    def _violates_upper(self, G: CourseGraph, L: Schedule, u: int):
         """
         :param G: CourseGraph
         :param L: Schedule
