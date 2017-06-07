@@ -1,3 +1,7 @@
+"""
+A schedule that consists of a few layers (quarters).
+"""
+
 __author__ = "Jenny Zeng"
 __email__ = "jennyzengzzh@gmail.com"
 

@@ -76,9 +76,6 @@ class CourseGraph:
                 if u in self.G:
                     self.G[u].label = min((self.G[v].label + self.G[u].courseValue),
                                           self.G[u].label)
-        for cid, course in list(self.G.items()):
-            if course.label >= 0:
-                del self.G[cid]
         return starts
 
     def update_taken(self, cids):

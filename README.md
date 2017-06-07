@@ -18,7 +18,7 @@ described the Coffman-Graham algorithm that I will be working on, and some diffi
     2. second line: credits applied
     3. for every line after the first two line, open UCI student access, input courses that you have already taken, and can satisfy your requirement.
     if it is a GE course and does not satisfy any major requirement, put GE[category] -1,GE[category] -2,GE[category] -3 in it. No repetitions, and the number followed by the GE name is in range [1,3].
-    sample: [taken.txt](info/test/taken.txt)
+    sample: [taken.txt](info/taken.txt)
 
 4. If use avoid (allow user to avoid taking some courses): create a txt file called "avoid.txt" in the root directory and input courses you want to avoid.
 
@@ -206,7 +206,7 @@ On the contrary, without labeling, it takes the user 3 years and 1 quarter.
 10. Courses information I got from [www.reg.uci.edu](https://www.reg.uci.edu/cob/prrqcgi?term=201703&dept=COMPSCI&action=view_by_term#115) and [WebSoc](https://www.reg.uci.edu/perl/WebSoc). I integrated my crawlers into one on week 4 in Winter quarter.
 
     **sample**:
-    - [Courses info in some departments](info/test/fullcourses.txt)
+    - [Courses info in some departments](info/fullcourses.txt)
 
     In the txt file, each line contains info of a course and the line is separated by ";". Line is in the following format:
     ```[department code];[course num];[title];[prereqs];[units];[quarters];[isUpperOnly]```
@@ -220,7 +220,7 @@ On the contrary, without labeling, it takes the user 3 years and 1 quarter.
 11. CS specializations information I got manually from [catalogue.uci.edu](http://catalogue.uci.edu/donaldbrenschoolofinformationandcomputersciences/departmentofcomputerscience/#majorstext)
 
     **sample**:
-    - [CS specializations](info/test/specializations.txt)
+    - [CS specializations](info/specializations.txt)
 
 
 ## Research Project Schedule

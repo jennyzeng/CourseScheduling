@@ -1,16 +1,19 @@
+"""
+Course Scheduling class that will generate schedules a few times according to the input
+upper bound range and output the best one.
+"""
 from copy import deepcopy
 
 from CourseScheduling.Graph import CourseGraph
 from CourseScheduling.Schedule import Schedule
 from CourseScheduling.priodict import priorityDictionary as priodict
-
 from CourseScheduling.Course import Course
-
+import warnings
 __author__ = "Jenny Zeng"
 __email__ = "jennyzengzzh@gmail.com"
 
 
-class CourseScheduling:
+class Scheduling:
     def __init__(self, start_q=0, total_quarter_codes=6):
         self.total_quarter_codes = total_quarter_codes
         self.start_q = start_q
@@ -28,7 +31,7 @@ class CourseScheduling:
                 best_r: How the schedule satisfy the requirements. if number >= 1,
                         it means there is still some requirements it does not satisfy.
         """
-        best = None
+        best_L = None
         best_u = None
         best_r = None
         for u in range(from_u, to_u + 1):
@@ -36,11 +39,14 @@ class CourseScheduling:
             L_temp = deepcopy(L)
             R_temp = deepcopy(R)
             schedule = self.get_single_schedule(G_temp, L_temp, R_temp, u)
-            if schedule and (not best or len(schedule) > len(best)):
-                best = schedule
+            if schedule and (not best_L or len(schedule) > len(best_L)):
+                best_L = schedule
                 best_u = u
                 best_r = R_temp
-        return best, best_u, best_r
+        if any([any(i) for i in best_r.values()]):
+            warnings.warn("Not all requirements are satisfied.")
+
+        return best_L, best_u, best_r
 
     def get_single_schedule(self, G: CourseGraph, L: Schedule, R, u: int):
         """
@@ -65,6 +71,34 @@ class CourseScheduling:
             return L
         else:
             return None
+
+    def find_course_assign_index(self, v: Course, L: Schedule, u: int):
+        """
+        single course assignment
+        :param v: course
+        :param L: schedule
+        :param u: upperBound index
+        :return: the index of the layer where v will be assigned
+        """
+        step = len(L) - 1
+        i = step
+        if (not self._valid(L, step, v)) or v.has_dependent(step):
+            i += 1
+            while not self._valid(L, i, v) and (not v.isUpperOnly or i >= u):
+                # add new empty layer L_i above current highest layer
+                # L.add_layer()
+                i += 1
+
+        lastStep = i
+        step -= 1
+        while (v.isUpperOnly and step >= u) or (not v.isUpperOnly and step >= 0):
+            if v.has_dependent(step):
+                break
+            elif self._valid(L, step, v):
+                lastStep = step
+            step -= 1
+
+        return lastStep
 
     def _violates_upper(self, G: CourseGraph, R, L: Schedule, u: int):
         """
@@ -137,33 +171,6 @@ class CourseScheduling:
                 PQ[cid] = course.label
         return PQ
 
-    def find_course_assign_index(self, v: Course, L: Schedule, u: int):
-        """
-        single course assignment
-        :param v: course
-        :param L: schedule
-        :param u: upperBound index
-        :return: the index of the layer where v will be assigned
-        """
-        step = len(L) - 1
-        i = step
-        if (not self._valid(L, step, v)) or v.has_dependent(step):
-            i += 1
-            while not self._valid(L, i, v) and (not v.isUpperOnly or i >= u):
-                # add new empty layer L_i above current highest layer
-                # L.add_layer()
-                i += 1
-
-        lastStep = i
-        step -= 1
-        while (v.isUpperOnly and step >= u) or (not v.isUpperOnly and step >= 0):
-            if v.has_dependent(step):
-                break
-            elif self._valid(L, step, v):
-                lastStep = step
-            step -= 1
-
-        return lastStep
 
     def _valid(self, L: Schedule, i: int, v: Course):
         """

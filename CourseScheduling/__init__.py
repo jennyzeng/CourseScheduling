@@ -1,6 +1,6 @@
 from CourseScheduling.Course import Course
 from CourseScheduling.Graph import CourseGraph
-from CourseScheduling.CourseScheduling import CourseScheduling
+from CourseScheduling.Scheduling import Scheduling
 from CourseScheduling.Schedule import Schedule
 
 
