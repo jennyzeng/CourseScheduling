@@ -3,11 +3,13 @@ an example about how to load data and generate a schedule
 """
 import CourseScheduling as cs
 from DataHelper.loadData import DataLoading
-
+import time
 __author__ = "Jenny Zeng"
 __email__ = "jennyzengzzh@gmail.com"
 
 if __name__ == '__main__':
+    start_time = time.time()
+
     # config upper standing units
     upper_units = 90
     # load taken info
@@ -44,3 +46,7 @@ if __name__ == '__main__':
     print(best_u)
     print(R_detail)
     print(best_r)
+    print("--- %s seconds ---" % (time.time() - start_time))
+    # in terminal, type:
+    # python -m cProfile example.py
+    # to see the time and calls for each function
