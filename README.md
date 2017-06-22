@@ -7,7 +7,7 @@ Course Scheduling is an 2 quarters ICS honor research project at University of C
 You can refer to the example.py to see how the data is loaded to the course scheduling graph and how to generate a schedule. Instead of using txt files to store data, it is also possible to build a database, and input preprocessed data into the Course Scheduling API. 
 
 ## Recent Update
-I formed a team after I finalize the research project. Now we are working on building a website for the course scheduling algorithm, and the expected deadline for its release is late-August， 2017. If you have any suggestions, feel free to email me. 
+I formed a team after I finalize the research project. Now we are working on building a website for the course scheduling algorithm, and the expected release time is late-August, 2017. If you have any suggestions, feel free to email me. 
 
 ## Reports
 ### Final Report
