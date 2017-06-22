@@ -11,9 +11,9 @@ I formed a team after I finalize the research project. Now we are working on bui
 
 ## Reports
 ### Final Report
-In the [final report](report-final.pdf), there is introduction to two related algorithms, the Coffman-Graham algorithm and the Hu's algorithm, as well as detailed explanation about how the algorithm works.
+In the [final report](reports/report-final.pdf), there is introduction to two related algorithms, the Coffman-Graham algorithm and the Hu's algorithm, as well as detailed explanation about how the algorithm works.
 
 ### Initial Plan
 In my initial plan, I illustrated my main idea of the course scheduling project,
 described the Coffman-Graham algorithm that I will be working on, and some difficulties as well as interesting points.
-[research-initial-plan.pdf](research-initial-plan.pdf)
+[research-initial-plan.pdf](reports/research-initial-plan.pdf)
