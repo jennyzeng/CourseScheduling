@@ -23,10 +23,10 @@ class Course:
         return -len(self.requirements)
 
     def __str__(self):
-        return " label={label}\n units={units}\n quarterCodes={qc}\n " \
-               "isUpperOnly={iuo}\n prereq={prereq}\n prereqBool={pb}\n" \
-               " successors={successors}\n dependentIndex={di}\n " \
-               "requirements={req}\n".format(label=self.label, units=self.units,
+        return " label: {label}\n units: {units}\n quarterCodes: {qc}\n " \
+               "isUpperOnly: {iuo}\n prereq: {prereq}\n prereqBool: {pb}\n" \
+               " successors: {successors}\n dependentIndex: {di}\n " \
+               "requirements: {req}\n".format(label=self.label, units=self.units,
                                              qc=self.quarterCodes, iuo=self.isUpperOnly,
                                              prereq=self.prereq, pb=self.prereqBool,
                                              successors=self.successors,

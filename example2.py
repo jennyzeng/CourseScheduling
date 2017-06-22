@@ -11,28 +11,24 @@ if __name__ == '__main__':
     start_time = time.time()
 
     # config upper standing units
-    upper_units = 90
+    upper_units = 10
     # load taken info
-    startQ, applied_units, taken = DataLoading.load_taken(filename="info/taken2.txt")
+    startQ, applied_units, taken = DataLoading.load_taken(filename="test/taken.txt")
     # load avoid info
-    avoid = DataLoading.load_avoid(filename="info/avoid.txt")
+    avoid = DataLoading.load_avoid(filename="test/avoid.txt")
     # load graph, config if user is upper standing
-    G = DataLoading.load_courses(prereq_filename="info/fullcourses_new.txt",
+    G = DataLoading.load_courses(prereq_filename="test/testcourses.txt",
                                  show_upper=cs.is_upper_standing(applied_units, upper_units))
     # load requirement sheet
     R_detail, R = DataLoading.load_requirements(
-        requirements=["University", "GEI", "GEII", "GEIII", "GEIV",
-                      "GEV", "GEVI", "GEVII", "GEVIII", "CS-Lower-division", "CS-Upper-division",
-                   "Intelligent Systems"
-                      ],
-        filename="info/specializations.txt")
+        requirements=["firstReq","secondReq"],
+        filename="test/test_spec.txt")
 
     # update requirement table based on the taken information
     cs.update_requirements(R_detail, R, taken)
-    print(R_detail)
-    print(R)
+
     # load max width for each quarter
-    max_widths = DataLoading.load_width_func_table("info/widthFunc.txt")
+    max_widths = DataLoading.load_width_func_table("test/test_widthFunc.txt")
 
     # construct CourseGraph. graph is labeled after init
     graph = cs.CourseGraph(G, r_detail=R_detail, R=R, avoid=avoid, taken=taken)
@@ -47,6 +43,7 @@ if __name__ == '__main__':
     print(best_u)
     print(R_detail)
     print(best_r)
+    print(graph)
     print("--- %s seconds ---" % (time.time() - start_time))
     # in terminal, type:
     # python -m cProfile example.py
