@@ -8,6 +8,7 @@ You can refer to the example.py to see how the data is loaded to the course sche
 
 ## Recent Update
 I formed a team after I finalized the research project. Now we are working on building a website for the course scheduling algorithm, and the expected release time is late-August, 2017. If you have any suggestions, feel free to email me. 
+Website development code is in the repository: [CourseScheduling-Web](https://github.com/jennyzeng/CourseScheduling-Web)
 
 ## Reports
 ### Final Report
